@@ -253,7 +253,6 @@ export default {
       this.hideSaveButton = bool
     },
     async toCreateAccount(){
-      console.log(this.textField.val)
       if (this.$v.$invalid){
         this.$v.$touch()
         return
