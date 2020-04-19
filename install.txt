@@ -1,3 +1,10 @@
+Клонирование с компа в битбакет
+cd C:\OSPanel\domains\00_Learn\01_Vuejs\nkcrm
+git remote add origin https://3314099@bitbucket.org/3314099/nkcrm.git
+git push -u origin master
+
+
+
 vue create nkcrm
 vue add vuetify
 https://github.com/vuetifyjs/vuetify/tree/master/packages/docs/src/examples
