@@ -1,0 +1,16 @@
+vue create nkcrm
+vue add vuetify
+https://github.com/vuetifyjs/vuetify/tree/master/packages/docs/src/examples
+npm install vue-router
+npm install
+npm serve
+https://github.com/Inndy/vue-clipboard2
+https://github.com/vuelidate/vuelidate
+https://github.com/vuetifyjs/vuetify/blob/master/packages/docs/src/examples/forms/intermediate/vuelidate.vue
+
+
+https://github.com/hejianxian/vue-drag-and-drop-list
+
+https://codepen.io/pasoevi/pen/ooOrpo
+
+https://codepen.io/mttran/pen/daJzXM

@@ -1,28 +1,31 @@
 <template>
-  <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
-  </div>
+  <v-app>
+    <v-component :is="layuot">
+      <router-view />
+    </v-component>
+
+    
+  </v-app>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import EmptyLayout from './layouts/EmptyLayout'
+import CrmLayout from './layouts/CrmLayout'
 
 export default {
   name: 'App',
-  components: {
-    HelloWorld
-  }
-}
-</script>
+  computed: {
+    layuot() {
+      return (this.$route.meta.layuot || 'EmptyLayout')
+    }
+  },
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-</style>
+  components: {
+    EmptyLayout, CrmLayout
+  },
+
+  data: () => ({
+    //
+  }),
+};
+</script>
