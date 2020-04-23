@@ -55,6 +55,7 @@ export default{
     counter: 0,
 
     params: {
+    editCategory: {},
     tabBtn: 'priority',
     accounts:[],
     tags:[],
@@ -69,8 +70,7 @@ export default{
     leftMenuButton: 0,
     leftMenuButtonColor: '',
     btnDisabled: false,
-    leftMenuitems: [
-          ],
+    leftMenuitems: [],
     },
 
   }),
