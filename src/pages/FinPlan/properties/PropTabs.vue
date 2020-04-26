@@ -16,6 +16,11 @@
       Приоритеты
       </v-tab>
       <v-tab
+      :href="'#filters'"
+        >
+      Фильтры
+      </v-tab>
+      <v-tab
       :href="'#categories'"
       >
       Категории
@@ -39,6 +44,20 @@
         </v-card>
       </v-tab-item>
       <v-tab-item
+      :value="'filters'"
+      >
+        <v-card
+          color="basil"
+          flat
+        >
+          <v-card-text>
+            <filters
+            :params="params"
+             />
+          </v-card-text>
+        </v-card>
+      </v-tab-item>
+      <v-tab-item
       :value="'categories'"
       >
         <v-card
@@ -46,7 +65,9 @@
           flat
         >
           <v-card-text>
-            <categories />
+            <categories
+            :params="params"
+             />
           </v-card-text>
         </v-card>
       </v-tab-item>
@@ -70,10 +91,11 @@
 <script>
   import tags from '@/pages/FinPlan/Accounts/tags'
   import categories from '@/pages/FinPlan/Accounts/categories'
+  import filters from '@/pages/FinPlan/Accounts/filters'
 
   export default {
     components:{
-      tags, categories
+      tags, categories, filters
     },
     data () {
       return {

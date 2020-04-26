@@ -55,12 +55,13 @@ export default{
     counter: 0,
 
     params: {
-    editCategory: {},
+    colorPicker: '',
+    categories: [],
     tabBtn: 'priority',
     accounts:[],
     tags:[],
     account:{},
-    filter1List:[],
+    filters:[],
     route: '',
     leftPanelButton: '',
     visibility: true,
@@ -79,7 +80,13 @@ export default{
     this.params.leftMenuitems = await this.$store.dispatch('fetchLeftMenuitems')
     this.params.accounts = await this.$store.dispatch('fetchAccounts')
     this.params.tags = await this.$store.dispatch('fetchTags')
-
+    this.params.tags = this.sortObjectsArray(this.params.tags, 'title')
+    this.params.filters = await this.$store.dispatch('fetchFilters')
+    this.params.filters = this.sortObjectsArray(this.params.filters, 'title')
+    this.params.categories = await this.$store.dispatch('fetchCategories')
+    this.params.categories = this.sortObjectsArray(this.params.categories, 'title')
+    
+    
     let filter1List = await this.$store.dispatch('fetchFilter1')
     let arr = []
          Object.keys(filter1List).forEach(key => {
@@ -144,9 +151,73 @@ export default{
       this.updatedTag(tag)
       this.params.tabBtn = tabBtn
     })
+    eventEmitter.$on('changeCategory', (action,val) =>{
+      this.params.tabBtn = 'categories'
+      this.toChangeCategory(action,val)
+    })
+    eventEmitter.$on('changeFilter', (action,val) =>{
+      this.params.tabBtn = 'filters'
+      this.toChangeFilter(action,val)
+    })
+    eventEmitter.$on('changeColorPicker', (color) =>{
+      this.params.colorPicker = color
+    })
   },
   methods:{
+    sortObjectsArray(array, field){
+      return [...array].sort(( a, b ) => a[field] > b[field] ? 1 : -1)
+    },
+    sort_by(field, reverse, primer){
+      var key = primer ? 
+          function(x) {return primer(x[field])} : 
+          function(x) {return x[field]};
 
+      reverse = !reverse ? 1 : -1;
+
+      return function (a, b) {
+          return a = key(a), b = key(b), reverse * ((a > b) - (b > a));
+        } 
+    },
+    toChangeCategory(action,val){
+        switch(action) {
+          case 'changeFilterColor':  // if (x === 'value1')
+            this.params.editCategory.filter.color = val
+          break
+          case 'createdCategory':  // if (x === 'value1')
+            this.params.categories.push(val)
+            this.params.categories = this.sortObjectsArray(this.params.categories, 'title')
+            this.counter++
+          break
+          case 'toCreateSubCategory':  // if (x === 'value1')
+            this.titleLable = 'Создание подкатегории'
+            this.commentLable = 'Комментарий к категории'
+          break
+          default:
+            this.titleLable = 'Строка поиска'
+            this.commentLable = ''
+            break
+        }
+    },
+    toChangeFilter(action,val){
+        switch(action) {
+          case 'changeFilterColor':  // if (x === 'value1')
+            this.params.editCategory.filter.color = val
+          break
+          case 'createdFilter':  // if (x === 'value1')
+            this.params.filters.push(val)
+            this.params.filters = this.sortObjectsArray(this.params.filters, 'title')
+            this.counter++
+          break
+          case 'toCreateSubCategory':  // if (x === 'value1')
+            this.titleLable = 'Создание подкатегории'
+            this.commentLable = 'Комментарий к категории'
+          break
+          default:
+            this.titleLable = 'Строка поиска'
+            this.commentLable = ''
+            break
+        }
+    },
     async changeCheckAccount(bool,accountId){
       for (var i = this.params.accounts.length - 1; i >= 0; --i) {
         if (this.params.accounts[i].id === accountId) {

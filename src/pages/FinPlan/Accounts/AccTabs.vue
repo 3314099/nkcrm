@@ -124,7 +124,9 @@
       </v-tab-item>
 
       <v-tab-item>
-        <categories />
+        <categories
+        :params="params"
+         />
       </v-tab-item>
       <v-tab-item>
         <tags 

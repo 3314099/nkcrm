@@ -1,5 +1,7 @@
 <template>
 <div>
+  modeBtn:{{modeBtn}} /
+  mode:{{mode}}
   <div class="d-flex justify-start justify-space-between">
     <div>
       <div class="d-flex justify-space-between">
@@ -18,21 +20,24 @@
           >
           </v-text-field>
         </div>
-        <div v-if="modeBtn === 'toCreateFilter'">
+        <div v-if="modeBtn === 'filter'">
           <colorPicker
-          :color="color"
+          :color="params.editCategory.filter.color"
           />
         </div>
-        <div v-if="modeBtn && modeBtn !== 'toCreateFilter'">
+        <div v-if="modeBtn && modeBtn !== 'filter'">
           <v-autocomplete
             style="min-width: 460px"
             class="pa-1"
-            v-model="value"
-            :items="items"
+            v-model="selectField"
+            name="id"
+            :items="selectFieldArray"
+            item-text="title"
+            item-value="id"
             dense
             small
             outlined
-            label="Filled"
+            :label="selectLable"
           ></v-autocomplete>
         </div>
       </div>
@@ -56,7 +61,7 @@
 
     <div class="d-flex" >
       <div v-if="modeBtn" class="d-flex justify-space-around flex-column align-center ">
-        <div >
+        <div v-if="mode !== 'create'">
           <v-btn
               @click="button('remove')"
               class="mx-2"
@@ -79,7 +84,7 @@
               class="mx-2"
               outlined
               color="primary" 
-              @click="button('create')"
+              @click="button(mode)"
               :disabled="errorBtn"
               >
               Сохранить
@@ -97,7 +102,7 @@
             class="mx-1"
             outlined
             color="primary" 
-            @click= "toChangeModeBtn('toCreateFilter')"
+            @click= "toChangeModeBtn('filter', 'create')"
             :disabled="errorBtn"
             >
               Создать фильтр
@@ -110,7 +115,7 @@
             class="mx-1"
             outlined
             color="primary" 
-            @click= "toChangeModeBtn('toCreateCategory')"
+            @click= "toChangeModeBtn('category', 'create')"
             :disabled="errorBtn"
             >
             Создать категорию
@@ -122,7 +127,7 @@
             width=""
             class="mx-1"
             color="primary" 
-            @click= "toChangeModeBtn('toCreateSubCategory')"
+            @click= "toChangeModeBtn('subCategory', 'create')"
             :disabled="errorBtn"
             >
             Создать подкатегорию
@@ -144,11 +149,11 @@
 <div class="d-flex ">
   
         <v-chip
-        v-for="n in 25"
-        :key="n"
-      outlined
+        v-for="filter in filtersArray"
+        :key="filter.id"
       label
-      color="teal"
+      :color="filter.color"
+      :text-color="'white'"
       filter: true
       class="mx-1"
       close
@@ -156,7 +161,7 @@
       @click:close="toEditTag(tag)"
       @click="changeCheck(tag.id)"
     >
-      {{ n * 50 }}
+      {{ filter.title }}
     </v-chip>
   </div>
    <v-row
@@ -179,18 +184,19 @@
 <div class="d-flex ">
   
         <v-chip
-        v-for="n in 25"
-        :key="n"
+        v-for="cat in categoriesArray"
+        :key="cat.id"
       label
-      color="teal"
+      :color="cat.color"
       filter: true
       class="ma-1"
       close
+      :text-color="'white'"
       close-icon="mdi-lead-pencil"
       @click:close="toEditTag(tag)"
       @click="changeCheck(tag.id)"
     >
-      {{ n * 50 }}
+      {{ cat.title }}
     </v-chip>
   </div>
    <v-row
@@ -213,20 +219,20 @@
 <div class="d-flex ">
   
         <v-chip
-        v-for="n in 25"
-        :key="n"
+        v-for="scat in subCategoriesArray"
+        :key="scat.id"
       outlined
       label
-      color="teal"
+      :text-color="'black'"
+      :color="scat.color"
       filter: true
-      disabled
       class="ma-1"
       close
       close-icon="mdi-lead-pencil"
       @click:close="toEditTag(tag)"
       @click="changeCheck(tag.id)"
     >
-      {{ n * 50 }}
+      {{ scat.title }}
     </v-chip>
   </div>
    <v-row
@@ -244,78 +250,183 @@
   </div>
 </template>
 <script>
-    import colorPicker from "@/components/colorPicker"
+  import {eventEmitter} from '@/main'
+  import colorPicker from "@/components/colorPicker"
   export default {
     components:{colorPicker},
     data(){
       return {
         color: '#F44336',
-        value: '',
-        items: ['foo', 'bar', 'fizz', 'buzz'],
+        selectField: '',
+        selectFieldArray: [],
+        type: '',
         titleLable: 'Строка поиска',
+        selectLable: '',
         commentLable: '',
-        createBtn: '',
         modeBtn: '',
+        mode:'',
         errorBtn: false,
         titleField: '',
         commentField: ''
       }
     },
+    props:{
+      params:{
+        type: Object
+      }
+    },
+    computed:{
+      childTitleField(){
+        if(this.titleField){
+          return this.titleField
+        }else{
+          return ''
+        }
+      },
+      childCommentField(){
+        if(this.commentField){
+          return this.commentField
+        }else{
+          return ''
+        }
+      },
+      fullCategoriesArray(){
+        let arr = this.params.categories
+          // присваиваем цвет
+        for (var i = this.params.categories.length - 1; i >= 0; --i) {
+          for (var k = arr.length - 1; k >= 0; --k) {
+            if (this.params.categories[i].id === arr[k].filterId) {
+              arr[k].color = this.params.categories[i].color
+            }
+          }
+        }
+        return arr
+      },
+      filtersArray(){
+        return this.fullCategoriesArray.filter((cat)=>{
+          return (cat.type === 'filter')
+          })
+      },
+      categoriesArray(){
+        return this.fullCategoriesArray.filter((cat)=>{
+          return (cat.type === 'category')
+          })
+      },
+      subCategoriesArray(){
+        return this.fullCategoriesArray.filter((cat)=>{
+          return (cat.type === 'subCategory')
+          })
+      },
+    },
     methods:{
-      toChangeModeBtn(modeBtn){
+      toChangeModeBtn(modeBtn, mode){
         this.modeBtn = modeBtn
-        switch(modeBtn) {
-          case 'toCreateFilter':  // if (x === 'value1')
-            this.titleLable = 'Создание фильтра'
-            this.commentLable = 'Комментарий к фильтру'
-          break
-          case 'toCreateCategory':  // if (x === 'value1')
-            this.titleLable = 'Создание категории'
-            this.commentLable = 'Комментарий к категории'
-          break
-          case 'toCreateSubCategory':  // if (x === 'value1')
-            this.titleLable = 'Создание подкатегории'
-            this.commentLable = 'Комментарий к категории'
-          break
+        this.mode = mode
+        switch(this.modeBtn) {
+          case 'filter':  
+            if(this.mode === 'create'){
+              this.titleLable = 'Создание фильтра'
+              this.commentLable = 'Комментарий к фильтру'
+              this.selectFieldArray = []
+            } else {
+              this.titleLable = 'Изменение фильтра'
+              this.commentLable = 'Комментарий к фильтру'
+              this.selectFieldArray = []
+            }
+            break
+          case 'category':
+            if(this.mode === 'create'){
+              this.titleLable = 'Создание категории'
+              this.commentLable = 'Комментарий к категории'
+              this.selectFieldArray = this.filtersArray
+            } else {
+              this.titleLable = 'Изменение категории'
+              this.commentLable = 'Комментарий к категории'
+              this.selectFieldArray = this.filtersArray
+            }
+            break
+          case 'subCategory':
+             if(this.mode === 'create'){
+              this.titleLable = 'Создание фильтра'
+              this.commentLable = 'Комментарий к фильтру'
+              this.selectFieldArray = this.categoriesArray
+            } else {
+              this.titleLable = 'Изменение фильтра'
+              this.commentLable = 'Комментарий к фильтру'
+              this.selectFieldArray = this.categoriesArray
+            }
+            break
           default:
             this.titleLable = 'Строка поиска'
             this.commentLable = ''
-            break
+            this.selectLable = ''
+            this.selectFieldArray = []
+          break
         }
       },
       button(val){
-        switch(this.modeBtn) {
-          case 'toCreateFilter':  
-            this.titleLable = 'Создание фильтра'
-            this.commentLable = 'Комментарий к фильтру'
-              switch(val){
-                case 'create':
-                  this.createFilter()
+        let color = ''
+        let filterId = ''
+        let categoryId = ''
+        switch(val) {
+          case 'create':
+            switch(this.modeBtn){
+              case 'filter':
+                color = this.params.editCategory.filter.color,
+                filterId = '',
+                categoryId = ''
                 break
-                case 'update':
-                  this.updateFilter()
+              case 'category':
+                color = '',
+                filterId = this.selectField,
+                categoryId = ''
                 break
-                case 'remove':
-                  this.removeFilter()
+              case 'subCategory':
+                filterId = this.fullCategoriesArray.filter((cat)=>{
+                  return (cat.id === this.selectField)
+                  })
+                filterId = filterId.filter((cat)=>{
+                  return (cat.id === this.selectField)
+                  })
+                  console.log(filterId[0].filterId)
+                color = '',
+                filterId = filterId[0].filterId,
+                categoryId = this.selectField
                 break
-                case 'cancel':
-                  this.cancelCreateFilter()
-                break
-                default:
-                return
-              }
+            }
+              this.toCreate(color,filterId,categoryId)
             break
-          case 'toCreateCategory':  
-            this.titleLable = 'Создание категории'
-            this.commentLable = 'Комментарий к категории'
-            this.createCategory()
+          case 'edit':
             break
-          default:
-            return
+          case 'remove':
+            break
+          default: // cancel
+            this.modeBtn = ''
+            this.titleLable = 'Строка поиска'
+            this.commentLable = ''
+            this.selectLable = ''
+            this.selectFieldArray = []
+          break
         }
       },
-      createFilter(){
-        console.log('createFilter')
+      async toCreate(color,filterId,categoryId){
+        try{
+          const category = await this.$store.dispatch('createCategory', {
+            title: this.childTitleField,
+            comment: this.childCommentField,
+            type: this.modeBtn,
+            color: color,
+            filterId: filterId,
+            categoryId: categoryId
+            })
+            this.titleField = ''
+            this.commentsField = ''
+            this.modeBtn = ''
+
+            eventEmitter.$emit('changeCategory', 'createdCategory', category)
+          }catch (e){
+            // console.log('error')
+          }
       },
       updateFilter(){
         console.log('updateFilter')
@@ -323,11 +434,21 @@
       removeFilter(){
         console.log('removeFilter')
       },
-      cancelCreateFilter(){
-        console.log('cancelFilter')
+      toCancelCreateFilter(){
+        this.modeBtn = ''
+        this.commentsField = ''
+      },
+      
+      updateCategory(){
+        console.log('updateFilter')
+      },
+      removeCategory(){
+        console.log('removeFilter')
+      },
+      toCancelCreateCategory(){
+        this.modeBtn = ''
+        this.commentsField = ''
       }
     },
-    computed:{
-    }
   }
 </script>

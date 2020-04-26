@@ -113,6 +113,28 @@ export default  {
       throw e
       }
     },
+    async fetchCategories({commit,dispatch}){
+      try{
+        const uid = await dispatch('getUid')
+        let categories = (await firebase.database().ref(`/users/${uid}/categories`).once('value')).val() || {}
+        const cats = Object.keys(categories).map(key=> ({...categories[key],id:key}) )
+        return cats
+      }catch(e){
+      commit('setError', e)
+      throw e
+      }
+    },
+    async fetchFilters({commit,dispatch}){
+      try{
+        const uid = await dispatch('getUid')
+        let filters = (await firebase.database().ref(`/users/${uid}/filters`).once('value')).val() || {}
+        const fils = Object.keys(filters).map(key=> ({...filters[key],id:key}) )
+        return fils
+      }catch(e){
+      commit('setError', e)
+      throw e
+      }
+    },
     async fetchTags({commit,dispatch}){
       try{
         const uid = await dispatch('getUid')
@@ -173,6 +195,67 @@ export default  {
               currancy,
               dateCreate,
               comments,
+            }
+        }catch(e){
+        commit('setError', e)
+        throw e
+        }
+    },
+    async createFilter({commit,dispatch}, {
+      title,
+      comment,
+      type,
+      color,
+      filterGroupId,
+      }){
+        try{
+          const uid = await dispatch('getUid')
+          const category = await firebase.database().ref(`/users/${uid}/filters`).push({
+            title,
+            comment,
+            type,
+            color,
+            filterGroupId,
+            })
+            return{
+              id:category.key,
+              title,
+              comment,
+              type,
+              color,
+              filterGroupId,
+              }
+        }catch(e){
+        commit('setError', e)
+        throw e
+        }
+    },
+    async createCategory({commit,dispatch}, {
+      title,
+      comment,
+      type,
+      color,
+      filterId,
+      categoryId,
+      }){
+        try{
+          const uid = await dispatch('getUid')
+          const category = await firebase.database().ref(`/users/${uid}/categories`).push({
+            title,
+            comment,
+            type,
+            color,
+            filterId,
+            categoryId,
+            })
+            return{
+              id:category.key,
+              title,
+              comment,
+              type,
+              color,
+              filterId,
+              categoryId,
             }
         }catch(e){
         commit('setError', e)
@@ -241,13 +324,11 @@ export default  {
           throw e
           }
     },
-    async pushLMBArray({commit,dispatch},{
+    async pushLMBArray({commit},{
       leftMenuitems,
       }){
-        console.log(leftMenuitems)
         try{
-          const uid = await dispatch('getUid')
-          console.log(uid)
+          // const uid = await dispatch('getUid')
 
             await firebase.database().ref(`admin`).update({
               leftMenuitems,
