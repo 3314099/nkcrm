@@ -200,17 +200,29 @@ export default{
     },
     toChangeFilter(action,val){
         switch(action) {
-          case 'changeFilterColor':  // if (x === 'value1')
-            this.params.editCategory.filter.color = val
-          break
+          // case 'changeFilterColor':  // if (x === 'value1')
+          //   this.params.editCategory.filter.color = val
+          // break
           case 'createdFilter':  // if (x === 'value1')
             this.params.filters.push(val)
             this.params.filters = this.sortObjectsArray(this.params.filters, 'title')
             this.counter++
           break
-          case 'toCreateSubCategory':  // if (x === 'value1')
-            this.titleLable = 'Создание подкатегории'
-            this.commentLable = 'Комментарий к категории'
+          case 'updatedFilter':  // if (x === 'value1')
+            for (var k = this.params.filters.length - 1; k >= 0; --k) {
+              if (this.params.filters[k].id === val.id) {
+                  this.params.filters[k] = val;
+              }
+            }
+            this.counter++
+          break
+          case 'deletedFilter':  // if (x === 'value1')
+            for (var i = this.params.filters.length - 1; i >= 0; --i) {
+              if (this.params.filters[i].id === val) {
+                  this.params.filters.splice(i,1);
+              }
+            }
+            this.counter++
           break
           default:
             this.titleLable = 'Строка поиска'

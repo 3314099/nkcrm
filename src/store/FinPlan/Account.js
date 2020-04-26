@@ -230,6 +230,39 @@ export default  {
         throw e
         }
     },
+    async editFilter({commit,dispatch}, {
+      id,
+      title,
+      comment,
+      type,
+      color,
+      filterGroupId,
+      }){
+      try{
+        const uid = await dispatch('getUid')
+  
+        await firebase.database().ref(`/users/${uid}/filters`).child(id).update({
+          id,
+          title,
+          comment,
+          type,
+          color,
+          filterGroupId,
+          })
+          return{
+            id,
+            title,
+            comment,
+            type,
+            color,
+            filterGroupId,
+          }
+                                                        
+      }catch(e){
+      commit('setError', e)
+      throw e
+      }
+  },
     async createCategory({commit,dispatch}, {
       title,
       comment,
@@ -420,6 +453,15 @@ export default  {
         // console.log(uid,id)
 
         await firebase.database().ref(`/users/${uid}/tags/${id}`).remove()
+      }catch(e){
+      commit('setError', e)
+      throw e
+      }
+    },
+    async removeFilter({commit,dispatch},id){
+      try{
+        const uid = await dispatch('getUid')
+        await firebase.database().ref(`/users/${uid}/filters/${id}`).remove()
       }catch(e){
       commit('setError', e)
       throw e

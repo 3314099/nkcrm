@@ -1,5 +1,6 @@
 <template>
 <div>
+  {{selectedFilterBtnId}}
   <div class="d-flex justify-start justify-space-between">
     <div>
       <div class="d-flex justify-space-between">
@@ -25,15 +26,15 @@
           :colorsIgnore="colorsIgnore"
           />
         </div>
-        <div v-if="modeBtn && modeBtn !== 'filterGroup'">
+        <div v-if="modeBtn && modeBtn !== 'filterGroup'" >
           <v-autocomplete
-            style="min-width: 460px"
+            style="min-width: 460px; cursor: pointer"
             class="pa-1"
             v-model="selectField"
             :auto-select-first="true"
             name="id"
             no-data-text="Список пуст"
-            :items="selectFieldArray"
+            :items="selectListArray"
             item-text="title"
             item-value="id"
             dense
@@ -151,10 +152,10 @@
       :text-color="'black'"
       filter: true
       class="mx-1"
-      close
-      close-icon="mdi-lead-pencil"
+      :close="Gfilter.id ? true : false"
+      close-icon= 'mdi-lead-pencil'
       @click:close="toChangeModeBtn('filterGroup', 'edit', Gfilter)"
-      @click="changeCheck(tag.id)"
+      @click="selectFilterBtnId(Gfilter.id)"
     >
       {{ Gfilter.title }}
     </v-chip>
@@ -240,6 +241,7 @@
         color: '#F44336',
         selectField: '',
         selectFieldArray: [],
+        selectedFilterBtnId: '',
         type: '',
         titleLable: 'Строка поиска',
         commentLable: '',
@@ -283,24 +285,44 @@
         let arr = this.params.filters
           // присваиваем цвет
         for (var i = this.params.filters.length - 1; i >= 0; --i) {
+          let count = 0
           for (var k = arr.length - 1; k >= 0; --k) {
-            if (this.params.filters[i].id === arr[k].filterGroupId) {
-              arr[k].color = this.params.filters[i].color
+            if (this.params.filters[k].id === arr[i].filterGroupId) {
+              arr[i].color = this.params.filters[k].color
+              count ++
             }
           }
+          if(!count){arr[i].filterGroupId = ''}
         }
         return arr
       },
-      filtersGroupArray(){
-        return this.fullFiltersArray.filter((cat)=>{
-          return (cat.type === 'filterGroup')
-          })
-      },
       filtersArray(){
-        return this.fullFiltersArray.filter((cat)=>{
-          return (cat.type === 'filter')
+        let filtersArray = this.fullFiltersArray.filter((fil)=>{
+          return (fil.type === 'filter')
           })
+          if(this.selectedFilterBtnId){
+            filtersArray = this.fullFiltersArray.filter((fil)=>{
+            return (fil.filterGroupId === this.selectedFilterBtnId)
+            })
+          }
+          return filtersArray
       },
+      filtersGroupArray(){
+        let filtersGroupArray = this.fullFiltersArray.filter((item)=>{
+          return (item.type === 'filterGroup')
+          })
+          // if(this.selectedFilterBtnId){
+          //     filtersGroupArray = filtersGroupArray.filter((item)=>{
+          //   return (item.id === this.selectedFilterBtnId)
+          //   })
+          // }
+          return filtersGroupArray
+      },
+      selectListArray(){
+        let selectListArray = this.filtersGroupArray
+          selectListArray.unshift({id:'',color:'',comment:'',filterGroupId:'',title:'Без группы',type:'filterGroup'})
+          return selectListArray
+      }
     },
     methods:{
       toChangeModeBtn(modeBtn, mode, editItem){
@@ -347,27 +369,36 @@
       },
       button(val){
         let color = ''
-        let filterId = ''
-        let categoryId = ''
+        let filterGroupId = ''
         switch(val) {
           case 'create':
             switch(this.modeBtn){
               case 'filterGroup':
                 color = this.params.colorPicker,
-                filterId = '',
-                categoryId = ''
+                filterGroupId = ''
                 break
               case 'filter':
                 color = '',
-                filterId = this.selectField,
-                categoryId = ''
+                filterGroupId = this.selectField
                 break
             }
-              this.toCreate(color,filterId,categoryId)
+            this.toCreate(color,filterGroupId)
             break
           case 'edit':
+            switch(this.modeBtn){
+              case 'filterGroup':
+                color = this.params.colorPicker,
+                filterGroupId = ''
+                break
+              case 'filter':
+                color = '',
+                filterGroupId = this.selectField
+                break
+            }
+            this.toEdit(color,filterGroupId)
             break
           case 'remove':
+              this.toRemove()
             break
           default: // cancel
             this.modeBtn = ''
@@ -375,13 +406,15 @@
             this.commentLable = ''
             this.selectLable = ''
             this.selectFieldArray = []
+            this.selectField = ''
             this.editItem = {}
             this.titleField = ''
+            this.commentField = ''
             eventEmitter.$emit('changeColorPicker', '')
           break
         }
       },
-      async toCreate(color,filterGroupId,filterId){
+      async toCreate(color,filterGroupId){
         try{
           const filter = await this.$store.dispatch('createFilter', {
             title: this.childTitleField,
@@ -389,7 +422,6 @@
             type: this.modeBtn,
             color: color,
             filterGroupId: filterGroupId,
-            filterId: filterId
             })
             this.titleField = ''
             this.commentsField = ''
@@ -401,22 +433,51 @@
             // console.log('error')
           }
       },
-      updateFilter(){
-        console.log('updateFilter')
+      async toEdit(color,filterGroupId){
+        try{
+          const filter = await this.$store.dispatch('editFilter', {
+            id: this.editItem.id,
+            title: this.childTitleField,
+            comment: this.childCommentField,
+            type: this.modeBtn,
+            color: color,
+            filterGroupId: filterGroupId,
+            })
+            this.titleField = ''
+            this.commentsField = ''
+            this.modeBtn = ''
+
+            eventEmitter.$emit('changeFilter', 'updatedFilter', filter)
+            eventEmitter.$emit('changeColorPicker', '')
+          }catch (e){
+            // console.log('error')
+          }
       },
-      removeFilter(){
-        console.log('removeFilter')
+      async toRemove(){
+      try{
+            await this.$store.dispatch('removeFilter', this.editItem.id)
+            eventEmitter.$emit('changeFilter', 'deletedFilter', this.editItem.id)
+            this.titleField = ''
+            this.commentsField = ''
+            this.modeBtn = ''
+            this.editItem = {}
+
+          }catch (e){
+            // console.log('error')
+          }
       },
-      updateCategory(){
-        console.log('updateFilter')
-      },
-      removeCategory(){
-        console.log('removeFilter')
-      },
+      selectFilterBtnId(selectedFilterBtnId){
+        console.log(111)
+        if(!this.selectedFilterBtnId){
+          this.selectedFilterBtnId = selectedFilterBtnId
+        }else{
+          this.selectedFilterBtnId = ''
+        }
+      }
     },
     filters:{
       tips(filterId,filters){
-        let filterGroupTitle = ''
+        let filterGroupTitle = 'Без группы'
           for (var i = filters.length - 1; i >= 0; --i) {
             if (filters[i].id === filterId) {
               filterGroupTitle = filters[i].title

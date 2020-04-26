@@ -43,8 +43,19 @@ export default{
   },
   data: ()=>({
       items: [
+      '#DD2C00',
+      '#78909C',
+      '#8D6E63',
+      '#FF7043',
+      '#FF6D00',
       '#F44336',
-      '#E91E63',
+      '#FFAB00',
+      '#FFD600',
+      '#AEEA00',
+      '#64DD17',
+      '#00C853',
+      '#00C853',
+      '#66BB6A',
       '#9C27B0',
       '#673AB7',
       '#3F51B5',
@@ -52,6 +63,13 @@ export default{
       '#03A9F4',
       '#00BCD4',
       '#009688',
+      '#CDDC39',
+      '#FF9800',
+      '#CDDC39',
+      '#CDDC39',
+      '#CDDC39',
+      '#CDDC39',
+      '#CDDC39',
       '#CDDC39',
       ]
   }),
@@ -69,7 +87,8 @@ export default{
       if(this.editItem.color){
         filteredArray.unshift(this.editItem.color)
       }
-      return filteredArray
+      let slicedArray = filteredArray.slice (0, 10);
+      return slicedArray
     },
     color(){
       if(this.params.colorPicker){
@@ -77,6 +96,7 @@ export default{
       }else{
         return this.colorsArray[0]
       }
+      // #e0e0e0 - серый
     }
   },
   methods:{
