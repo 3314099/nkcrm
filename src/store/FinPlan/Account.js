@@ -206,7 +206,7 @@ export default  {
       comment,
       type,
       color,
-      filterGroupId,
+      groupId,
       }){
         try{
           const uid = await dispatch('getUid')
@@ -215,7 +215,7 @@ export default  {
             comment,
             type,
             color,
-            filterGroupId,
+            groupId,
             })
             return{
               id:category.key,
@@ -223,7 +223,7 @@ export default  {
               comment,
               type,
               color,
-              filterGroupId,
+              groupId,
               }
         }catch(e){
         commit('setError', e)
@@ -236,7 +236,7 @@ export default  {
       comment,
       type,
       color,
-      filterGroupId,
+      groupId,
       }){
       try{
         const uid = await dispatch('getUid')
@@ -247,7 +247,7 @@ export default  {
           comment,
           type,
           color,
-          filterGroupId,
+          groupId,
           })
           return{
             id,
@@ -255,7 +255,7 @@ export default  {
             comment,
             type,
             color,
-            filterGroupId,
+            groupId,
           }
                                                         
       }catch(e){

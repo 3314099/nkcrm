@@ -155,9 +155,8 @@ export default{
       this.params.tabBtn = 'categories'
       this.toChangeCategory(action,val)
     })
-    eventEmitter.$on('changeFilter', (action,val) =>{
-      this.params.tabBtn = 'filters'
-      this.toChangeFilter(action,val)
+    eventEmitter.$on('changeItem', (action,val) =>{
+      this.toChangeItem(action,val)
     })
     eventEmitter.$on('changeColorPicker', (color) =>{
       this.params.colorPicker = color
@@ -198,12 +197,10 @@ export default{
             break
         }
     },
-    toChangeFilter(action,val){
-        switch(action) {
-          // case 'changeFilterColor':  // if (x === 'value1')
-          //   this.params.editCategory.filter.color = val
-          // break
-          case 'createdFilter':  // if (x === 'value1')
+    toChangeItem(action,val){
+      switch(action) {
+        case 'createdFilter':  // if (x === 'value1')
+            this.params.tabBtn = 'filters'
             this.params.filters.push(val)
             this.params.filters = this.sortObjectsArray(this.params.filters, 'title')
             this.counter++
@@ -216,7 +213,7 @@ export default{
             }
             this.counter++
           break
-          case 'deletedFilter':  // if (x === 'value1')
+          case 'deletedFilter':  
             for (var i = this.params.filters.length - 1; i >= 0; --i) {
               if (this.params.filters[i].id === val) {
                   this.params.filters.splice(i,1);
@@ -225,8 +222,6 @@ export default{
             this.counter++
           break
           default:
-            this.titleLable = 'Строка поиска'
-            this.commentLable = ''
             break
         }
     },

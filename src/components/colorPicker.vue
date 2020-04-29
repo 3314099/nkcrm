@@ -7,6 +7,7 @@
           <v-btn
           v-for="item in colorsArray"
           :key="item"
+          :ripple="false"
           @click="changeColor(item)"
           :color="item"
           mandatory= true
@@ -54,7 +55,6 @@ export default{
       '#AEEA00',
       '#64DD17',
       '#00C853',
-      '#00C853',
       '#66BB6A',
       '#9C27B0',
       '#673AB7',
@@ -65,12 +65,6 @@ export default{
       '#009688',
       '#CDDC39',
       '#FF9800',
-      '#CDDC39',
-      '#CDDC39',
-      '#CDDC39',
-      '#CDDC39',
-      '#CDDC39',
-      '#CDDC39',
       ]
   }),
   created(){

@@ -1,6 +1,6 @@
 <template>
 <div>
-  {{selectedFilterBtnId}}
+  {{selectField}}
   <div class="d-flex justify-start justify-space-between">
     <div>
       <div class="d-flex justify-space-between">
@@ -11,24 +11,26 @@
             :label="titleLable"
             v-model="titleField"
             dense
-            hint="3-16 символов"
+            :error-messages="childTitleFieldErrors"
+            :hint="modeBtn ? 'Не менее 3-х и не более 15-ти символов' : ''"
             outlined
             small
             clearable
-            :counter="15"
+            :counter="modeBtn ? 15 : false"
+            @blur="$v.childTitleField.$touch()"
           >
           </v-text-field>
         </div>
-        <div v-if="modeBtn === 'filterGroup'">
+        <div v-if="modeBtn === 'group'">
           <colorPicker
           :params="params"
           :editItem="editItem"
           :colorsIgnore="colorsIgnore"
           />
         </div>
-        <div v-if="modeBtn && modeBtn !== 'filterGroup'" >
+        <div v-if="modeBtn && modeBtn !== 'group'" >
           <v-autocomplete
-            style="min-width: 460px; cursor: pointer"
+            style="min-width: 460px"
             class="pa-1"
             v-model="selectField"
             :auto-select-first="true"
@@ -105,7 +107,7 @@
             class="mx-1"
             outlined
             color="primary" 
-            @click= "toChangeModeBtn('filterGroup', 'create')"
+            @click= "toChangeModeBtn('group', 'create')"
             :disabled="errorBtn"
             >
               Создать группу фильтров
@@ -118,7 +120,7 @@
             class="mx-1"
             outlined
             color="primary" 
-            @click= "toChangeModeBtn('filter', 'create')"
+            @click= "toChangeModeBtn('item', 'create')"
             :disabled="errorBtn"
             >
             Создать фильтр
@@ -129,8 +131,11 @@
   </div>
   <v-divider class="mx-4"></v-divider>
     <div class="d-flex justify-space-between">
-  <div>
-    <h2 class="ma-4 pr-0">Группы фильтров:</h2>
+    <div>
+      <h2 class="ma-4 pr-0">Группы фильтров:</h2>
+    </div>
+    <div>
+      <h3 v-if="!this.groupsArray.length" class="ma-4 pr-0">Список пуст</h3>
     </div>
   <v-container
         id="scroll-target"
@@ -141,28 +146,31 @@
         <v-tooltip 
         max-width= 400
         top
-        v-for="Gfilter in filtersGroupArray"
-        :key="Gfilter.id"
+        v-for="group in groupsArray"
+        :key="group.id"
     >
       <template v-slot:activator="{ on }">
         <v-chip
       v-on="on"
       label
-      :color="Gfilter.color"
-      :text-color="'black'"
+      :ripple="false"
+      :color="group.color"
+      :outlined="selectedItemBtnId ? false : true"
+      style="border-width: 4px"
+      text-color="'black'"
       filter: true
       class="mx-1"
-      :close="Gfilter.id ? true : false"
+      :close="group.id !== 'withoutGroup' ? true : false"
       close-icon= 'mdi-lead-pencil'
-      @click:close="toChangeModeBtn('filterGroup', 'edit', Gfilter)"
-      @click="selectFilterBtnId(Gfilter.id)"
+      @click:close="toChangeModeBtn('group', 'edit', group)"
+      @click="selectItemBtnId(group.id)"
     >
-      {{ Gfilter.title }}
+      {{ group.title }}
     </v-chip>
     </template>
       <span 
       >
-      <div v-if="Gfilter.comment">{{Gfilter.comment}}</div>
+      <div v-if="group.comment">{{group.comment}}</div>
       <div v-else>Нет комментариев</div>
       </span>
     </v-tooltip>
@@ -176,8 +184,11 @@
       </v-container>
   </div>
   <div class="d-flex justify-space-between">
-  <div>
+    <div>
     <h2 class="ma-4 pr-0">Фильтры:</h2>
+    </div>
+    <div>
+    <h3 v-if="!this.fullItemsArray.length" class="ma-4 pr-0">Список пуст</h3>
     </div>
   <v-container
         id="scroll-target"
@@ -188,30 +199,32 @@
           <v-tooltip 
         max-width= 400
         top
-        v-for="fil in filtersArray"
-        :key="fil.id"
+        v-for="item in fullItemsArray"
+        :key="item.id"
     >
       <template v-slot:activator="{ on }">
         <v-chip
         v-on="on"
+        outlined
+        style="border-width: 4px"
       label
-      :color="fil.color"
+      :color="item.color"
+      text-color="'black'"
       filter: true
       class="ma-1"
       close
-      :text-color="'black'"
       close-icon="mdi-lead-pencil"
-      @click:close="toChangeModeBtn('filter', 'edit', fil)"
+      @click:close="toChangeModeBtn('item', 'edit', item)"
       @click="changeCheck(tag.id)"
     >
-      {{ fil.title }}
+      {{ item.title }}
     </v-chip>
     </template>
       <span 
       >
-      <div >Группа фильтров: {{ fil.filterGroupId | tips(params.filters) }} </div>
+      <div >Группа фильтров: {{ item | tips(fullGroupsArray) }} </div>
       <div >-----------------</div>
-      <div v-if="fil.comment">{{fil.comment}}</div>
+      <div v-if="item.comment">{{item.comment}}</div>
       <div v-else>Нет комментариев</div>
       </span>
     </v-tooltip>
@@ -231,25 +244,58 @@
   </div>
 </template>
 <script>
+  import { validationMixin } from 'vuelidate'
+  // import { required, minLength, maxLength} from 'vuelidate/lib/validators'
+  // import { required, minLength, maxLength} from 'vuelidate/lib/validators'
   import {eventEmitter} from '@/main'
   import colorPicker from "@/components/colorPicker"
   export default {
+    mixins: [validationMixin],
+    validations: {
+      childTitleField: {
+        unique: function(){
+          return this.valchildTitleField.unique
+          },
+        length: function(){
+          return this.valchildTitleField.length
+          },
+      }
+      
+      
+      
+        
+
+      // }
+      // childTitleField: ()=>{
+      //   return {
+      //     
+
+      //   }
+      // },
+      // })
+    },
     components:{colorPicker},
     data(){
       return {
-        editItem: {},
-        color: '#F44336',
-        selectField: '',
-        selectFieldArray: [],
-        selectedFilterBtnId: '',
-        type: '',
-        titleLable: 'Строка поиска',
-        commentLable: '',
-        modeBtn: '',
         mode:'',
-        errorBtn: false,
+        color:'',
+        modeBtn: '',
+        editItem: {},
+        selectField: 'withoutGroup',
+        selectedItemBtnId: '',
+        type: '',
         titleField: '',
-        commentField: ''
+        titleLable: 'Строка поиска',
+        commentField: '',
+        commentLable: '',
+        errorBtn: false,
+        itemsWithWGGroup: false,
+        // rules
+        // titleFieldRules: [
+        // v => !!v || 'Обязательное поле',
+        // v => (v && v.length > 10) || 'Не менее 10 символов',
+        // ],
+        // titleErrors:[111,222]
       }
     },
     props:{
@@ -258,15 +304,51 @@
       }
     },
     computed:{
-      colorsIgnore(){
-        let arr = [] 
-        for (var k = this.params.filters.length - 1; k >= 0; --k) {
-          if(this.params.filters[k].type === 'filterGroup'){
-            arr.push(this.params.filters[k].color)
-          }
+      valchildTitleField(){
+        let valchildTitleField = {}
+        let unique = true
+        let length = true
+        let childTitleField = this.childTitleField
+        let editItem = this.editItem
+        console.log(editItem)
+        let GroupsArray = []
+        GroupsArray.push({id:'withoutGroup',color:'',comment:'',groupId:'',title:'Без группы',type:'group'})
+        GroupsArray= GroupsArray.concat(this.fullGroupsArray)
+        console.log(GroupsArray)
+        if(this.mode === 'edit'){
+          GroupsArray = GroupsArray.filter((item)=>{
+                return (item.title !== editItem.title)})
         }
-          return arr
+        console.log(GroupsArray)
+        let ItemsArray = this.fullItemsArray
+        switch(this.modeBtn) {
+          case 'group':
+              GroupsArray = GroupsArray.filter((item)=>{
+                return (item.title.toUpperCase() === childTitleField.toUpperCase())})  
+              GroupsArray.length ? unique = false : unique = true
+            break
+          case 'item':
+            ItemsArray = ItemsArray.filter((item)=>{
+              return (item.title.toUpperCase() === childTitleField.toUpperCase())})  
+            ItemsArray.length ? unique = false : unique = true
+            break
+          default:
+            unique = true
+          break
+        }
+        // this.childTitleField ? unique = true : unique = false
+        this.childTitleField.length > 2 && this.childTitleField.length < 16 ? length = true : length = false
+        if(this.modeBtn){
+          valchildTitleField.unique = unique
+          valchildTitleField.length = length
+        }else{
+          valchildTitleField.unique = true
+          valchildTitleField.length = true
+        }
+        return valchildTitleField
+        
       },
+      
       childTitleField(){
         if(this.titleField){
           return this.titleField
@@ -281,81 +363,137 @@
           return ''
         }
       },
-      fullFiltersArray(){
-        let arr = this.params.filters
-          // присваиваем цвет
-        for (var i = this.params.filters.length - 1; i >= 0; --i) {
-          let count = 0
-          for (var k = arr.length - 1; k >= 0; --k) {
-            if (this.params.filters[k].id === arr[i].filterGroupId) {
-              arr[i].color = this.params.filters[k].color
-              count ++
+      childTitleFieldErrors() {
+        console.log(this.$v.childTitleField.$dirty)
+        let errors = []
+        if (!this.$v.childTitleField.$dirty) return errors
+        !this.$v.childTitleField.length && errors.push('Не менее 3-х и не более 15-ти символов')
+        !this.$v.childTitleField.unique && errors.push('Наименование уже существует')
+        return errors
+      },
+      fullItemsAndGroupsArray(){
+        return this.params.filters 
+      },
+      fullGroupsArray(){  // создаем массив групп внутри функции
+      return this.fullItemsAndGroupsArray.filter((item)=>{
+          return (item.type === 'group')
+          })
+      
+      },
+      fullItemsArray(){ // создаем массив айтемов внутри функции
+        let fullItemsArray = this.fullItemsAndGroupsArray.filter((item)=>{
+          return (item.type === 'item')
+          })
+          let countItemsWithGroup = 0
+          for (var i = fullItemsArray.length - 1; i >= 0; --i) {
+            let countItemsWithoutGroup = 0
+            for (var k = this.fullGroupsArray.length - 1; k >= 0; --k) {
+              if(fullItemsArray[i].groupId === this.fullGroupsArray[k].id){
+                fullItemsArray[i].color = this.fullGroupsArray[k].color // присваиваем айтемам цвет групп
+                countItemsWithoutGroup++ // если ++, то у айтема есть группа
+              }
+            }
+            if(!countItemsWithoutGroup){fullItemsArray[i].groupId = 'withoutGroup'} //присваиваем айтему(withoutGroup или битый groupId) ,groupId = withoutGroup
+            if(fullItemsArray[i].groupId === 'withoutGroup'){
+              fullItemsArray[i].color = ''
+              countItemsWithGroup++
             }
           }
-          if(!count){arr[i].filterGroupId = ''}
-        }
-        return arr
-      },
-      filtersArray(){
-        let filtersArray = this.fullFiltersArray.filter((fil)=>{
-          return (fil.type === 'filter')
-          })
-          if(this.selectedFilterBtnId){
-            filtersArray = this.fullFiltersArray.filter((fil)=>{
-            return (fil.filterGroupId === this.selectedFilterBtnId)
-            })
+          if(countItemsWithGroup){
+            this.toChangeItemsWithWGGroup(true)
+          }else{
+            this.toChangeItemsWithWGGroup(false)
           }
-          return filtersArray
-      },
-      filtersGroupArray(){
-        let filtersGroupArray = this.fullFiltersArray.filter((item)=>{
-          return (item.type === 'filterGroup')
+          const selectedItemBtnId = this.selectedItemBtnId 
+          if(selectedItemBtnId){
+            fullItemsArray = this.fullItemsAndGroupsArray.filter((item)=>{
+              return (item.groupId === selectedItemBtnId)})
+          }
+          fullItemsArray =  fullItemsArray.filter((item)=>{
+          return (item.title.toUpperCase()).match(this.childTitleField.toUpperCase())
           })
-          // if(this.selectedFilterBtnId){
-          //     filtersGroupArray = filtersGroupArray.filter((item)=>{
-          //   return (item.id === this.selectedFilterBtnId)
-          //   })
-          // }
-          return filtersGroupArray
+          return fullItemsArray 
+        
+      },
+      groupsArray(){
+        let groupsArray = []
+        if(this.itemsWithWGGroup){
+          groupsArray.push({id:'withoutGroup',color:'',comment:'111',groupId:'',title:'Без группы',type:'group'})
+        }
+        groupsArray= groupsArray.concat(this.fullGroupsArray)
+        const selectedItemBtnId = this.selectedItemBtnId 
+        if(selectedItemBtnId){ // формирует массив групп с учетом нажатой группы
+          groupsArray = groupsArray.filter((item)=>{
+            return (item.id === selectedItemBtnId)})
+        }
+        if(this.childTitleField){
+          groupsArray = this.filteredItemArrayByTitleField(groupsArray)
+        }
+        return groupsArray
+      },
+      colorsIgnore(){
+        let arr = [] 
+        for (var k = this.fullGroupsArray.length - 1; k >= 0; --k) {
+            arr.push(this.fullGroupsArray[k].color)
+        }
+          return arr
       },
       selectListArray(){
-        let selectListArray = this.filtersGroupArray
-          selectListArray.unshift({id:'',color:'',comment:'',filterGroupId:'',title:'Без группы',type:'filterGroup'})
+        let selectListArray = []
+        selectListArray.push({id:'withoutGroup',color:'',comment:'111',groupId:'',title:'Без группы',type:'group'})
+        selectListArray = selectListArray.concat(this.fullGroupsArray)
           return selectListArray
       }
     },
     methods:{
+      filteredItemArrayByTitleField(groupsArray){ // получает computed fullItemsArray и возвращает фильтрованый список групп
+        let newGroupsArray = []
+        const uniqueArray = [...new Set(this.fullItemsArray.map(item => item.groupId))]; // получаем массив уникальных id по groupId
+        for(var h = 0; h < uniqueArray.length; h++){
+          if(uniqueArray[h] === 'withoutGroup'){
+            newGroupsArray.push({id:'withoutGroup',color:'',comment:'111',groupId:'',title:'Без группы',type:'group'})
+          }
+        }
+        for (var i = 0; i < groupsArray.length; i++) {
+          for (var k = 0; k < uniqueArray.length; k++) {
+            if(groupsArray[i].id === uniqueArray[k] && groupsArray[i].id !== 'withoutGroup'){
+              newGroupsArray.push(groupsArray[i]) // добавляем объекты group в массив
+            }
+          }
+        }
+        return newGroupsArray
+      },
+      toChangeItemsWithWGGroup(bool){
+        this.itemsWithWGGroup = bool
+      },
       toChangeModeBtn(modeBtn, mode, editItem){
         this.modeBtn = modeBtn
         this.mode = mode
+        this.$v.$reset()
         switch(this.modeBtn) {
-          case 'filterGroup':  
+          case 'group':  
             if(this.mode === 'create'){
               this.titleLable = 'Создание группы фильтров'
               this.commentLable = 'Комментарий к группе фильтров'
-              this.selectFieldArray = []
             } else { // edit
               this.editItem = editItem
               eventEmitter.$emit('changeColorPicker', this.editItem.color)
               this.titleLable = 'Изменение группы фильтров'
               this.commentLable = 'Комментарий к группе фильтров'
-              this.selectFieldArray = []
               this.titleField = this.editItem.title
               this.commentField = this.editItem.comment
             }
             break
-          case 'filter':
+          case 'item':
             if(this.mode === 'create'){
               this.titleLable = 'Создание фильтра'
               this.commentLable = 'Комментарий к фильтру'
-              this.selectFieldArray = this.filtersGroupArray
             } else { // edit
               this.titleLable = 'Изменение фильтра'
               this.commentLable = 'Комментарий к фильтру'
-              this.selectFieldArray = this.filtersGroupArray
               this.editItem = editItem
               this.titleField = this.editItem.title
-              this.selectField = this.editItem.filterGroupId
+              this.selectField = this.editItem.groupId
               this.commentField = this.editItem.comment
             }
             break
@@ -363,50 +501,58 @@
             this.titleLable = 'Строка поиска'
             this.commentLable = ''
             this.selectLable = ''
-            this.selectFieldArray = []
           break
         }
       },
       button(val){
+     
         let color = ''
-        let filterGroupId = ''
+        let groupId = ''
         switch(val) {
           case 'create':
+            if (this.$v.$invalid){
+            this.$v.$touch()
+            return
+            }
             switch(this.modeBtn){
-              case 'filterGroup':
+              case 'group':
                 color = this.params.colorPicker,
-                filterGroupId = ''
+                groupId = ''
                 break
-              case 'filter':
+              case 'item':
                 color = '',
-                filterGroupId = this.selectField
+                groupId = this.selectField
                 break
             }
-            this.toCreate(color,filterGroupId)
+            this.toCreate(color,groupId)
             break
           case 'edit':
+            if (this.$v.$invalid){
+            this.$v.$touch()
+            return
+            }
             switch(this.modeBtn){
-              case 'filterGroup':
+              case 'group':
                 color = this.params.colorPicker,
-                filterGroupId = ''
+                groupId = ''
                 break
-              case 'filter':
+              case 'item':
                 color = '',
-                filterGroupId = this.selectField
+                groupId = this.selectField
                 break
             }
-            this.toEdit(color,filterGroupId)
+            this.toEdit(color,groupId)
             break
           case 'remove':
               this.toRemove()
             break
           default: // cancel
+            this.$v.$reset()
             this.modeBtn = ''
             this.titleLable = 'Строка поиска'
             this.commentLable = ''
             this.selectLable = ''
-            this.selectFieldArray = []
-            this.selectField = ''
+            this.selectField = 'withoutGroup'
             this.editItem = {}
             this.titleField = ''
             this.commentField = ''
@@ -414,40 +560,40 @@
           break
         }
       },
-      async toCreate(color,filterGroupId){
+      async toCreate(color,groupId){
         try{
-          const filter = await this.$store.dispatch('createFilter', {
+          const item = await this.$store.dispatch('createFilter', {
             title: this.childTitleField,
             comment: this.childCommentField,
             type: this.modeBtn,
             color: color,
-            filterGroupId: filterGroupId,
+            groupId: groupId,
             })
             this.titleField = ''
             this.commentsField = ''
             this.modeBtn = ''
 
-            eventEmitter.$emit('changeFilter', 'createdFilter', filter)
+            eventEmitter.$emit('changeItem', 'createdFilter', item)
             eventEmitter.$emit('changeColorPicker', '')
           }catch (e){
             // console.log('error')
           }
       },
-      async toEdit(color,filterGroupId){
+      async toEdit(color,groupId){
         try{
-          const filter = await this.$store.dispatch('editFilter', {
+          const item = await this.$store.dispatch('editFilter', {
             id: this.editItem.id,
             title: this.childTitleField,
             comment: this.childCommentField,
             type: this.modeBtn,
             color: color,
-            filterGroupId: filterGroupId,
+            groupId: groupId,
             })
             this.titleField = ''
             this.commentsField = ''
             this.modeBtn = ''
 
-            eventEmitter.$emit('changeFilter', 'updatedFilter', filter)
+            eventEmitter.$emit('changeItem', 'updatedFilter', item)
             eventEmitter.$emit('changeColorPicker', '')
           }catch (e){
             // console.log('error')
@@ -456,7 +602,7 @@
       async toRemove(){
       try{
             await this.$store.dispatch('removeFilter', this.editItem.id)
-            eventEmitter.$emit('changeFilter', 'deletedFilter', this.editItem.id)
+            eventEmitter.$emit('changeItem', 'deletedFilter', this.editItem.id)
             this.titleField = ''
             this.commentsField = ''
             this.modeBtn = ''
@@ -466,24 +612,23 @@
             // console.log('error')
           }
       },
-      selectFilterBtnId(selectedFilterBtnId){
-        console.log(111)
-        if(!this.selectedFilterBtnId){
-          this.selectedFilterBtnId = selectedFilterBtnId
+      selectItemBtnId(selectedItemBtnId){
+        if(!this.selectedItemBtnId){
+          this.selectedItemBtnId = selectedItemBtnId
         }else{
-          this.selectedFilterBtnId = ''
+          this.selectedItemBtnId = ''
         }
       }
     },
     filters:{
-      tips(filterId,filters){
-        let filterGroupTitle = 'Без группы'
-          for (var i = filters.length - 1; i >= 0; --i) {
-            if (filters[i].id === filterId) {
-              filterGroupTitle = filters[i].title
+      tips(item,groups){
+        let groupTitle = 'Без группы'
+          for (var i = groups.length - 1; i >= 0; --i) {
+            if (groups[i].id === item.groupId) {
+              groupTitle = groups[i].title
             }
           }
-        return filterGroupTitle
+        return groupTitle
       }
     }
   }
