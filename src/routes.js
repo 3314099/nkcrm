@@ -104,6 +104,15 @@ export default new VueRouter({
             },
           component: fin_plan
           },
+          {
+          path: '/video',
+          name: 'video',
+            meta: {
+              layuot: 'CrmLayout',
+              page: 'video'
+            },
+          component: FinPln
+          },
     ],
     mode: 'history'
 })

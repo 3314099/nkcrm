@@ -1,6 +1,5 @@
 <template>
 <div>
-  {{selectField}}
   <div class="d-flex justify-start justify-space-between">
     <div>
       <div class="d-flex justify-space-between">
@@ -12,11 +11,11 @@
             v-model="titleField"
             dense
             :error-messages="childTitleFieldErrors"
-            :hint="modeBtn ? 'Не менее 3-х и не более 15-ти символов' : ''"
+            :hint="modeBtn ? 'Не менее 3-х и не более 30-ти символов' : ''"
             outlined
             small
             clearable
-            :counter="modeBtn ? 15 : false"
+            :counter="modeBtn ? 30 : false"
             @blur="$v.childTitleField.$touch()"
           >
           </v-text-field>
@@ -48,19 +47,60 @@
       </div>
       <div v-if="modeBtn">
         <v-text-field
-          class="pa-1"
+          class="pa-1 pb-0"
           :label="commentLable"
           v-model="commentField"
+          :error-messages="childCommentFieldErrors"
           dense
           rows="1"
           hint="не более 50 символов"
           outlined
           small
           clearable
-          :counter="50"
+          :counter="100"
+          @blur="$v.childCommentField.$touch()"
+
         >
         </v-text-field>
       </div>
+      <v-col
+      cols="12" 
+      v-if="modeBtn && modeBtn !== 'group'"
+      class="d-flex justify-start pa-0 my-0"
+      >
+        <v-col
+        cols="4"
+        class="pa-0 my-0"
+        >
+          <h3>Типы операций:</h3>
+        </v-col>
+        <v-col
+        class="pa-0 my-0"
+        cols="4"
+        >
+          <v-switch
+              class="pa-0 my-0"
+              v-model="expenses"
+              label="Расходы"
+              color="success"
+              :error-messages="switchesErrors"
+              @change="$v.switches.$touch()"
+            ></v-switch>
+        </v-col>
+        <v-col
+        class="pa-0 my-0"
+        cols="4"
+        >
+          <v-switch
+          class="pa-0 my-0"
+              v-model="entrances"
+              label="Поступления"
+              color="primary"
+              :error-messages="switchesErrors"
+              @change="$v.switches.$touch()"
+            ></v-switch>
+        </v-col>
+      </v-col>
       
     </div>
 
@@ -132,10 +172,10 @@
   <v-divider class="mx-4"></v-divider>
     <div class="d-flex justify-space-between">
     <div>
-      <h2 class="ma-4 pr-0">Группы фильтров:</h2>
+      <h2 class="ma-4 mx-0 pr-0">Группы фильтров:</h2>
     </div>
     <div>
-      <h3 v-if="!this.groupsArray.length" class="ma-4 pr-0">Список пуст</h3>
+      <h3 v-if="!this.groupsArray.length" class="ml-0 mt-4 pr-0">Список пуст</h3>
     </div>
   <v-container
         id="scroll-target"
@@ -185,10 +225,10 @@
   </div>
   <div class="d-flex justify-space-between">
     <div>
-    <h2 class="ma-4 pr-0">Фильтры:</h2>
+    <h2 class="mx-0 mt-4 pr-0">Фильтры:</h2>
     </div>
     <div>
-    <h3 v-if="!this.fullItemsArray.length" class="ma-4 pr-0">Список пуст</h3>
+    <h3 v-if="!this.sortedFullItemsArrayByTitleField.length" class="ma-4 pr-0">Список пуст</h3>
     </div>
   <v-container
         id="scroll-target"
@@ -199,7 +239,7 @@
           <v-tooltip 
         max-width= 400
         top
-        v-for="item in fullItemsArray"
+        v-for="item in sortedFullItemsArrayByTitleField"
         :key="item.id"
     >
       <template v-slot:activator="{ on }">
@@ -245,8 +285,6 @@
 </template>
 <script>
   import { validationMixin } from 'vuelidate'
-  // import { required, minLength, maxLength} from 'vuelidate/lib/validators'
-  // import { required, minLength, maxLength} from 'vuelidate/lib/validators'
   import {eventEmitter} from '@/main'
   import colorPicker from "@/components/colorPicker"
   export default {
@@ -254,25 +292,22 @@
     validations: {
       childTitleField: {
         unique: function(){
-          return this.valchildTitleField.unique
+          return this.valСhildTitleField.unique
           },
         length: function(){
-          return this.valchildTitleField.length
+          return this.valСhildTitleField.length
+          },
+      },
+      childCommentField: {
+        length: function(){
+          return this.valСhildComentField.length
+          },
+      },
+      switches:{
+        empty: function(){
+          return this.valEmptySwitches
           },
       }
-      
-      
-      
-        
-
-      // }
-      // childTitleField: ()=>{
-      //   return {
-      //     
-
-      //   }
-      // },
-      // })
     },
     components:{colorPicker},
     data(){
@@ -288,6 +323,8 @@
         titleLable: 'Строка поиска',
         commentField: '',
         commentLable: '',
+        expenses: true,
+        entrances: true,
         errorBtn: false,
         itemsWithWGGroup: false,
         // rules
@@ -304,23 +341,51 @@
       }
     },
     computed:{
-      valchildTitleField(){
-        let valchildTitleField = {}
+      translate(){
+        let val = this.childTitleField
+        let translate = {
+          ru: '',
+          en: ''
+        }
+        var map = {
+          'q' : 'й', 'w' : 'ц', 'e' : 'у', 'r' : 'к', 't' : 'е', 'y' : 'н', 'u' : 'г', 'i' : 'ш', 'o' : 'щ', 'p' : 'з', '[' : 'х', ']' : 'ъ', 'a' : 'ф', 's' : 'ы', 'd' : 'в', 'f' : 'а', 'g' : 'п', 'h' : 'р', 'j' : 'о', 'k' : 'л', 'l' : 'д', ';' : 'ж', '\'' : 'э', 'z' : 'я', 'x' : 'ч', 'c' : 'с', 'v' : 'м', 'b' : 'и', 'n' : 'т', 'm' : 'ь', ',' : 'б', '.' : 'ю'
+          };
+          for (var i = 0; i < val.length; i++) {
+            let count = 0
+            for(var key in map){
+              if(val[i] === key || val[i] === map[key]){
+                translate.ru = translate.ru + map[key]
+                translate.en = translate.en + key
+                count++
+              }
+            }
+                if(!count){
+                  translate.ru = translate.ru + val[i]
+                  translate.en = translate.en + val[i]
+                }
+          }
+          return translate
+      },
+      switches(){
+        return this.expenses || this.entrances
+      },
+      valСhildTitleField(){
+        let valСhildTitleField = {}
         let unique = true
         let length = true
         let childTitleField = this.childTitleField
         let editItem = this.editItem
-        console.log(editItem)
         let GroupsArray = []
         GroupsArray.push({id:'withoutGroup',color:'',comment:'',groupId:'',title:'Без группы',type:'group'})
         GroupsArray= GroupsArray.concat(this.fullGroupsArray)
-        console.log(GroupsArray)
+        let ItemsArray = []
+        ItemsArray = ItemsArray.concat(this.fullItemsArray)
         if(this.mode === 'edit'){
           GroupsArray = GroupsArray.filter((item)=>{
                 return (item.title !== editItem.title)})
+          ItemsArray = ItemsArray.filter((item)=>{
+                return (item.title !== editItem.title)})
         }
-        console.log(GroupsArray)
-        let ItemsArray = this.fullItemsArray
         switch(this.modeBtn) {
           case 'group':
               GroupsArray = GroupsArray.filter((item)=>{
@@ -336,19 +401,28 @@
             unique = true
           break
         }
-        // this.childTitleField ? unique = true : unique = false
-        this.childTitleField.length > 2 && this.childTitleField.length < 16 ? length = true : length = false
+        this.childTitleField.length > 2 && this.childTitleField.length < 31 ? length = true : length = false
         if(this.modeBtn){
-          valchildTitleField.unique = unique
-          valchildTitleField.length = length
+          valСhildTitleField.unique = unique
+          valСhildTitleField.length = length
         }else{
-          valchildTitleField.unique = true
-          valchildTitleField.length = true
+          valСhildTitleField.unique = true
+          valСhildTitleField.length = true
         }
-        return valchildTitleField
-        
+        return valСhildTitleField
       },
-      
+      valСhildComentField(){
+        let valСhildCommentField = {}
+        let length = true
+        this.childCommentField.length < 100 ? length = true : length = false
+        valСhildCommentField.length = length
+        return valСhildCommentField
+      },
+      valEmptySwitches(){
+        let valEmptySwitches = true
+        !this.expenses && !this.entrances ? valEmptySwitches = false : valEmptySwitches = true
+        return valEmptySwitches
+      },
       childTitleField(){
         if(this.titleField){
           return this.titleField
@@ -364,11 +438,22 @@
         }
       },
       childTitleFieldErrors() {
-        console.log(this.$v.childTitleField.$dirty)
         let errors = []
         if (!this.$v.childTitleField.$dirty) return errors
-        !this.$v.childTitleField.length && errors.push('Не менее 3-х и не более 15-ти символов')
+        !this.$v.childTitleField.length && errors.push('Не менее 3-х и не более 30-ти символов')
         !this.$v.childTitleField.unique && errors.push('Наименование уже существует')
+        return errors
+      },
+      childCommentFieldErrors(){
+        let errors = []
+        if (!this.$v.childCommentField.$dirty) return errors
+        !this.$v.childCommentField.length && errors.push('Не более 100 символов')
+        return errors
+      },
+      switchesErrors(){
+        let errors = []
+        if (!this.$v.switches.$dirty) return errors
+        !this.$v.switches.empty && errors.push('Выбрать минимум одно значение')
         return errors
       },
       fullItemsAndGroupsArray(){
@@ -380,7 +465,7 @@
           })
       
       },
-      fullItemsArray(){ // создаем массив айтемов внутри функции
+      fullItemsArray(){ // создаем массив айтемов с учетом пустых и битых gropId с присвоением цвета
         let fullItemsArray = this.fullItemsAndGroupsArray.filter((item)=>{
           return (item.type === 'item')
           })
@@ -409,11 +494,28 @@
             fullItemsArray = this.fullItemsAndGroupsArray.filter((item)=>{
               return (item.groupId === selectedItemBtnId)})
           }
-          fullItemsArray =  fullItemsArray.filter((item)=>{
-          return (item.title.toUpperCase()).match(this.childTitleField.toUpperCase())
-          })
+          // fullItemsArray =  fullItemsArray.filter((item)=>{ //фильтрация по titleField
+          // return (item.title.toUpperCase()).match(this.childTitleField.toUpperCase())
+          // })
           return fullItemsArray 
         
+      },
+      sortedFullItemsArrayByTitleField(){
+        if(this.modeBtn === 'group'){
+          let arr = []
+          for (var i = this.fullItemsArray.length - 1; i >= 0; --i) {
+            for (var k = this.groupsArray.length - 1; k >= 0; --k) {
+              if(this.fullItemsArray[i].groupId === this.groupsArray[k].id){
+                arr.push(this.fullItemsArray[i])
+              }
+            }
+          }
+          return arr
+        }else{
+          return  this.fullItemsArray.filter((item)=>{ //фильтрация по titleField
+            return ((item.title.toUpperCase()).match(this.translate.ru.toUpperCase()) || (item.title.toUpperCase()).match(this.translate.en.toUpperCase()))
+            })
+        }
       },
       groupsArray(){
         let groupsArray = []
@@ -421,13 +523,17 @@
           groupsArray.push({id:'withoutGroup',color:'',comment:'111',groupId:'',title:'Без группы',type:'group'})
         }
         groupsArray= groupsArray.concat(this.fullGroupsArray)
+        if(this.childTitleField){
+          if(this.modeBtn === 'group'){
+            groupsArray = this.filteredGroupsArrayBysortedGroupArrayByTitleField() // фильтрует массив групп по массиву групп с учетом значения в titleField
+          }else{
+            groupsArray = this.filteredGroupsArrayBysortedFullItemsArrayByTitleField(groupsArray) // фильтрует массив групп по массиву айтемов с учетом значения в titleField
+          }
+        }
         const selectedItemBtnId = this.selectedItemBtnId 
         if(selectedItemBtnId){ // формирует массив групп с учетом нажатой группы
           groupsArray = groupsArray.filter((item)=>{
             return (item.id === selectedItemBtnId)})
-        }
-        if(this.childTitleField){
-          groupsArray = this.filteredItemArrayByTitleField(groupsArray)
         }
         return groupsArray
       },
@@ -446,9 +552,9 @@
       }
     },
     methods:{
-      filteredItemArrayByTitleField(groupsArray){ // получает computed fullItemsArray и возвращает фильтрованый список групп
+      filteredGroupsArrayBysortedFullItemsArrayByTitleField(groupsArray){ // получает computed fullItemsArray и возвращает фильтрованый список групп
         let newGroupsArray = []
-        const uniqueArray = [...new Set(this.fullItemsArray.map(item => item.groupId))]; // получаем массив уникальных id по groupId
+        const uniqueArray = [...new Set(this.sortedFullItemsArrayByTitleField.map(item => item.groupId))]; // получаем массив уникальных id по groupId
         for(var h = 0; h < uniqueArray.length; h++){
           if(uniqueArray[h] === 'withoutGroup'){
             newGroupsArray.push({id:'withoutGroup',color:'',comment:'111',groupId:'',title:'Без группы',type:'group'})
@@ -461,6 +567,20 @@
             }
           }
         }
+        return newGroupsArray
+      },
+      filteredGroupsArrayBysortedGroupArrayByTitleField(){
+        let newGroupsArray = []
+        // const uniqueArray = [...new Set(this.fullItemsArray.map(item => item.groupId))]; // получаем массив уникальных id по groupId
+        // for(var h = 0; h < uniqueArray.length; h++){
+        //   if(uniqueArray[h] === 'withoutGroup'){
+        //     }
+        // }
+          newGroupsArray.push({id:'withoutGroup',color:'',comment:'',groupId:'',title:'Без группы',type:'group'})
+        newGroupsArray = newGroupsArray.concat(this.fullGroupsArray)
+        newGroupsArray =  newGroupsArray.filter((item)=>{
+          return ((item.title.toUpperCase()).match(this.translate.ru.toUpperCase()) || (item.title.toUpperCase()).match(this.translate.en.toUpperCase()))
+          })
         return newGroupsArray
       },
       toChangeItemsWithWGGroup(bool){
@@ -482,6 +602,7 @@
               this.commentLable = 'Комментарий к группе фильтров'
               this.titleField = this.editItem.title
               this.commentField = this.editItem.comment
+              
             }
             break
           case 'item':
@@ -495,12 +616,16 @@
               this.titleField = this.editItem.title
               this.selectField = this.editItem.groupId
               this.commentField = this.editItem.comment
+              this.expenses = this.editItem.expenses
+              this.entrances = this.editItem.entrances
             }
             break
           default:
             this.titleLable = 'Строка поиска'
             this.commentLable = ''
             this.selectLable = ''
+            this.expenses = true
+            this.entrances = true
           break
         }
       },
@@ -556,6 +681,8 @@
             this.editItem = {}
             this.titleField = ''
             this.commentField = ''
+            this.expenses = true
+            this.entrances = true
             eventEmitter.$emit('changeColorPicker', '')
           break
         }
@@ -568,10 +695,14 @@
             type: this.modeBtn,
             color: color,
             groupId: groupId,
+            expenses: this.expenses,
+            entrances: this.entrances,
             })
             this.titleField = ''
             this.commentsField = ''
             this.modeBtn = ''
+            this.expenses = true
+            this.entrances = true
 
             eventEmitter.$emit('changeItem', 'createdFilter', item)
             eventEmitter.$emit('changeColorPicker', '')
@@ -588,10 +719,14 @@
             type: this.modeBtn,
             color: color,
             groupId: groupId,
+            expenses: this.expenses,
+            entrances: this.entrances,
             })
             this.titleField = ''
             this.commentsField = ''
             this.modeBtn = ''
+            this.expenses = true
+            this.entrances = true
 
             eventEmitter.$emit('changeItem', 'updatedFilter', item)
             eventEmitter.$emit('changeColorPicker', '')
@@ -618,7 +753,7 @@
         }else{
           this.selectedItemBtnId = ''
         }
-      }
+      },
     },
     filters:{
       tips(item,groups){

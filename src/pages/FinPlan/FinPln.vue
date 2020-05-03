@@ -24,6 +24,11 @@ class="d-flex justify-space-between"
     :params="params"
     :key="params.accounts.length + counter"
     />
+    <youtube
+    v-if="params.route === 'video'"
+    :params="params"
+    :key="params.accounts.length + counter"
+    />
   </div>
 
   <div class="ma-1">
@@ -40,6 +45,7 @@ import Accounts from '@/pages/FinPlan/Accounts/Accounts'
 import properties from '@/pages/FinPlan/properties/properties'
 import LeftMenu from '@/pages/FinPlan/LeftMenu'
 import RightMenu from '@/components/RightMenu/RightMenu'
+import youtube from '@/components/youtube'
 
 
 export default{
@@ -49,7 +55,8 @@ export default{
     Accounts,
     properties,
     LeftMenu,
-    RightMenu
+    RightMenu,
+    youtube
   },
   data: ()=>({
     counter: 0,

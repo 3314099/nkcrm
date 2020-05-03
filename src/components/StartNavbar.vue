@@ -124,6 +124,7 @@ export default {
         { title: 'Настройки', icon: '', url: '/properties'},
         { title: 'тестовая', icon: '', url: '/test'},
         { title: 'Счета2', icon: '', url: '/accounts2'},
+        { title: 'Видео', icon: '', url: '/video'},
       ],
       loginLink: "/login",
       items: [

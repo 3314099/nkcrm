@@ -207,6 +207,8 @@ export default  {
       type,
       color,
       groupId,
+      expenses,
+      entrances,
       }){
         try{
           const uid = await dispatch('getUid')
@@ -216,6 +218,8 @@ export default  {
             type,
             color,
             groupId,
+            expenses,
+            entrances,
             })
             return{
               id:category.key,
@@ -224,6 +228,8 @@ export default  {
               type,
               color,
               groupId,
+              expenses,
+              entrances,
               }
         }catch(e){
         commit('setError', e)
@@ -237,6 +243,8 @@ export default  {
       type,
       color,
       groupId,
+      expenses,
+      entrances,
       }){
       try{
         const uid = await dispatch('getUid')
@@ -248,6 +256,8 @@ export default  {
           type,
           color,
           groupId,
+          expenses,
+          entrances,
           })
           return{
             id,
@@ -256,6 +266,8 @@ export default  {
             type,
             color,
             groupId,
+            expenses,
+            entrances,
           }
                                                         
       }catch(e){
