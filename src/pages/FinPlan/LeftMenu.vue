@@ -6,9 +6,9 @@
   >
   <v-divider inset></v-divider>
   <v-card-title
+  v-for="(item, i) in params.leftMenuitems"
   :style="`background: ${item.background}`"
   :class="item.class"
-  v-for="(item, i) in params.leftMenuitems"
   :key="i"
   >
   <div class="font-italic caption width">

@@ -21,14 +21,14 @@
           >
           </v-text-field>
         </div>
-        <div v-if="modeBtn === 'group'">
+        <div v-if="modeBtn === 'section'">
           <colorPicker
           :params="params"
           :editItem="editItem"
           :colorsIgnore="colorsIgnore"
           />
         </div>
-        <div v-if="modeBtn && modeBtn !== 'group'" >
+        <div v-if="modeBtn && modeBtn !== 'section'" >
           <v-autocomplete
             style="min-width: 460px"
             class="pa-1"
@@ -42,7 +42,7 @@
             dense
             small
             outlined
-            label="Выберите группу фильтров"
+            :label="selectLable"
           ></v-autocomplete>
         </div>
       </div>
@@ -66,7 +66,7 @@
       </div>
       <v-col
       cols="12" 
-      v-if="modeBtn && modeBtn !== 'group'"
+      v-if="modeBtn && modeBtn !== 'section'"
       class="d-flex justify-start pa-0 my-0"
       >
         <v-col
@@ -148,10 +148,24 @@
             class="mx-1"
             outlined
             color="primary" 
+            @click= "toChangeModeBtn('section', 'create')"
+            :disabled="errorBtn"
+            >
+              Создать целевой раздел
+            </v-btn>
+          </div> 
+          <div 
+            class="pa-1"
+          >
+            <v-btn
+            width=""
+            class="mx-1"
+            outlined
+            color="primary" 
             @click= "toChangeModeBtn('group', 'create')"
             :disabled="errorBtn"
             >
-              Создать группу фильтров
+              Создать группу целей
             </v-btn>
           </div> 
           <div 
@@ -164,13 +178,12 @@
             @click= "toChangeModeBtn('item', 'create')"
             :disabled="errorBtn"
             >
-            Создать фильтр
+            Создать цель
           </v-btn>
           </div>
       </div>
     </div>
   </div>
-
     <v-row no-gutters style="flex-wrap: nowrap;">
       <v-col>
         <v-divider class="my-3"></v-divider>
@@ -179,13 +192,12 @@
         cols="2"
         class="d-flex justify-center"
       >
-      <h3> Группы фильтров</h3>
+      <h3> Целевые разделы</h3>
       </v-col>
       <v-col>
         <v-divider class="my-3"></v-divider>
       </v-col>
     </v-row>
-
     <div class="d-flex justify-center">
     <div class="d-flex justify-center">
       <h3 v-if="!this.groupsArray.length" class="mt-0">Список пуст</h3>
@@ -199,39 +211,101 @@
 <div class="d-flex ">
         <v-tooltip 
         top
-        v-for="group in groupsArray"
-        :key="group.id"
+        v-for="item in targetsArray"
+        :key="item.id"
     >
       <template v-slot:activator="{ on }">
         <v-chip
       v-on="on"
       label
       :ripple="false"
-      :color="group.color"
+      :color="item.color"
       :outlined="params.selectedItemBtnId ? false : true"
       style="border-width: 4px"
       text-color="'black'"
       filter: true
       class="mx-1"
-      :close="group.id !== 'withoutGroup' ? true : false"
+      :close="item.id !== 'withoutGroup' ? true : false"
       close-icon= 'mdi-lead-pencil'
-      @click:close="toChangeModeBtn('group', 'edit', group)"
-      @click="selectItemBtnId(group.id)"
+      @click:close="toChangeModeBtn('section', 'edit', item)"
+      @click="selectItemBtnId(item.id)"
     >
-      {{ group.title }}
+      {{ item.title }}
     </v-chip>
     </template>
       <span 
       >
-      <div v-if="group.comment">{{group.comment}}</div>
+      <div v-if="item.comment">{{item.comment}}</div>
       <div v-else>Нет комментариев</div>
       </span>
     </v-tooltip>
   </div>
       </v-container>
   </div>
-  <div v-if="params.route !== 'properties'">
-  <v-row no-gutters style="flex-wrap: nowrap;">
+
+
+
+    <v-row no-gutters style="flex-wrap: nowrap;">
+      <v-col>
+        <v-divider class="my-3"></v-divider>
+      </v-col>
+      <v-col
+        cols="2"
+        class="d-flex justify-center"
+      >
+      <h3> Целевые группы</h3>
+      </v-col>
+      <v-col>
+        <v-divider class="my-3"></v-divider>
+      </v-col>
+    </v-row>
+
+    <div class="d-flex justify-center">
+      <div class="d-flex justify-center">
+        <h3 v-if="!this.groupsArray.length" class="mt-0">Список пуст</h3>
+      </div>
+      <v-container
+        v-if="this.groupsArray.length"
+        id="scroll-target"
+        style="max-width: 1000px"
+        class="d-flex row my-1 mx-2 pt-1 overflow-x-auto"
+      >
+        <div class="d-flex ">
+          <v-tooltip 
+          top
+          v-for="group in groupsArray"
+          :key="group.id"
+          >
+            <template v-slot:activator="{ on }">
+              <v-chip
+                v-on="on"
+                label
+                :ripple="false"
+                :color="group.color"
+                :outlined="params.selectedItemBtnId ? false : true"
+                style="border-width: 4px"
+                text-color="'black'"
+                filter: true
+                class="mx-1"
+                :close="group.id !== 'withoutGroup' ? true : false"
+                close-icon= 'mdi-lead-pencil'
+                @click:close="toChangeModeBtn('group', 'edit', group)"
+                @click="selectItemBtnId(group.id)"
+              >
+              {{ group.title }}
+              </v-chip>
+            </template>
+            <span 
+            >
+            <div v-if="group.comment">{{group.comment}}</div>
+            <div v-else>Нет комментариев</div>
+            </span>
+          </v-tooltip>
+        </div>
+      </v-container>
+    </div>
+    <div >
+      <v-row no-gutters style="flex-wrap: nowrap;">
       <v-col
       >
         <v-divider class="my-3"></v-divider>
@@ -240,7 +314,7 @@
         cols="1"
         class="d-flex justify-center"
       >
-      <h3> Фильтры</h3>
+      <h3> Цели</h3>
          
       </v-col>
       <v-col
@@ -249,16 +323,13 @@
         <v-divider class="my-3"></v-divider>
       </v-col>
     </v-row>
-  <div class="d-flex justify-space-between">
-    <div>
-    <h2 class="mx-0 mt-4 pr-0">Фильтры:</h2>
-    </div>
-    <div>
+    <div class="d-flex justify-center">
+    <div class="d-flex justify-center">
     <h3 v-if="!this.sortedFullItemsArrayByTitleField.length" class="ma-4 pr-0">Список пуст</h3>
     </div>
   <v-container
         id="scroll-target"
-        style="max-height: 100px; max-width: 800px"
+        style="max-height: 100px; max-width: 1000px"
         class="row my-1 mx-2 pt-1 overflow-x-auto"
       >
 <div class="d-flex ">
@@ -288,7 +359,7 @@
     </template>
       <span 
       >
-      <div >Группа фильтров: {{ item | tips(fullGroupsArray) }} </div>
+      <div >Целевая группа: {{ item | tips(fullGroupsArray) }} </div>
       <div >-----------------</div>
       <div v-if="item.comment">{{item.comment}}</div>
       <div v-else>Нет комментариев</div>
@@ -304,8 +375,8 @@
       </v-container>
       </div>
   </div>
-  <filtersTable
-  :itemsArray="sortedFullItemsArrayByTitleField"
+  <targetsTable
+  :itemsArray="params.targets"
   :toChangeModeBtn="toChangeModeBtn"
   :modeBtn="modeBtn"
   />
@@ -319,7 +390,7 @@
   import { validationMixin } from 'vuelidate'
   import {eventEmitter} from '@/main'
   import colorPicker from "@/components/colorPicker"
-  import filtersTable from "@/pages/FinPlan/Accounts/filtersTable"
+  import targetsTable from "@/pages/FinPlan/Accounts/targetsTable"
   export default {
     mixins: [validationMixin],
     validations: {
@@ -342,7 +413,7 @@
           },
       }
     },
-    components:{colorPicker, filtersTable},
+    components:{colorPicker, targetsTable},
     data(){
       return {
         mode:'',
@@ -353,6 +424,7 @@
         type: '',
         titleField: '',
         titleLable: 'Строка поиска',
+        selectLable: '',
         commentField: '',
         commentLable: '',
         expenses: true,
@@ -576,10 +648,14 @@
         }
         return groupsArray
       },
+      targetsArray(){
+        return this.params.targets
+      },
       colorsIgnore(){
         let arr = [] 
-        for (var k = this.fullGroupsArray.length - 1; k >= 0; --k) {
-            arr.push(this.fullGroupsArray[k].color)
+
+        for (var k = this.targetsArray.length - 1; k >= 0; --k) {
+            arr.push(this.targetsArray[k].color)
         }
           return arr
       },
@@ -630,27 +706,41 @@
         this.mode = mode
         this.$v.$reset()
         switch(this.modeBtn) {
-          case 'group':  
+          case 'section':  
             if(this.mode === 'create'){
-              this.titleLable = 'Создание группы фильтров'
-              this.commentLable = 'Комментарий к группе фильтров'
+              this.titleLable = 'Создание целевого раздела'
+              this.commentLable = 'Комментарий к целевому разделу'
             } else { // edit
               this.editItem = editItem
               eventEmitter.$emit('changeColorPicker', this.editItem.color)
-              this.titleLable = 'Изменение группы фильтров'
-              this.commentLable = 'Комментарий к группе фильтров'
+              this.titleLable = 'Изменение целевого раздела'
+              this.commentLable = 'Комментарий к целевому разделу'
               this.titleField = this.editItem.title
               this.commentField = this.editItem.comment
-              
+            }
+            break
+          case 'group':  
+            if(this.mode === 'create'){
+              this.titleLable = 'Создание группы целей'
+              this.commentLable = 'Комментарий к группе целей'
+              this.selectLable = 'Выберите целевой раздел'
+            } else { // edit
+              this.editItem = editItem
+              eventEmitter.$emit('changeColorPicker', this.editItem.color)
+              this.titleLable = 'Изменение группы целей'
+              this.commentLable = 'Комментарий к группе целей'
+              this.titleField = this.editItem.title
+              this.commentField = this.editItem.comment
             }
             break
           case 'item':
             if(this.mode === 'create'){
-              this.titleLable = 'Создание фильтра'
-              this.commentLable = 'Комментарий к фильтру'
+              this.titleLable = 'Создание цели'
+              this.commentLable = 'Комментарий к цели'
+              this.selectLable = 'Выберите группу целей'
             } else { // edit
-              this.titleLable = 'Изменение фильтра'
-              this.commentLable = 'Комментарий к фильтру'
+              this.titleLable = 'Изменение цели'
+              this.commentLable = 'Комментарий к цели'
               this.editItem = editItem
               this.titleField = this.editItem.title
               this.selectField = this.editItem.groupId
@@ -669,9 +759,7 @@
         }
       },
       button(val){
-     
-        let color = ''
-        let groupId = ''
+        let item = {}
         switch(val) {
           case 'create':
             if (this.$v.$invalid){
@@ -679,16 +767,29 @@
             return
             }
             switch(this.modeBtn){
+              case 'section':
+                item.color = this.params.colorPicker,
+                item.sectionId = ''
+                item.groupId = ''
+                item.expenses = false,
+                item.entrances = false
+                break
               case 'group':
-                color = this.params.colorPicker,
-                groupId = ''
+                item.color = this.params.colorPicker,
+                item.sectionId = this.selectField
+                item.groupId = ''
+                item.expenses = false,
+                item.entrances = false
                 break
               case 'item':
-                color = '',
-                groupId = this.selectField
+                item.color = this.params.colorPicker,
+                item.sectionId = this.selectField
+                item.groupId = ''
+                item.expenses = false,
+                item.entrances = false
                 break
             }
-            this.toCreate(color,groupId)
+            this.toCreate(item)
             break
           case 'edit':
             if (this.$v.$invalid){
@@ -696,16 +797,30 @@
             return
             }
             switch(this.modeBtn){
+              case 'section':
+                item.id = this.editItem.id
+                item.color = this.params.colorPicker
+                item.sectionId = ''
+                item.groupId = ''
+                item.expenses = false,
+                item.entrances = false
+                break
               case 'group':
-                color = this.params.colorPicker,
-                groupId = ''
+                item.color = this.params.colorPicker
+                item.sectionId = ''
+                item.groupId = ''
+                item.expenses = false,
+                item.entrances = false
                 break
               case 'item':
-                color = '',
-                groupId = this.selectField
+                item.color = this.params.colorPicker,
+                item.sectionId = ''
+                item.groupId = ''
+                item.expenses = false,
+                item.entrances = false
                 break
             }
-            this.toEdit(color,groupId)
+            this.toEdit(item)
             break
           case 'remove':
               this.toRemove()
@@ -731,16 +846,17 @@
           break
         }
       },
-      async toCreate(color,groupId){
+      async toCreate(item){
         try{
-          const item = await this.$store.dispatch('createFilter', {
+          const createdItem = await this.$store.dispatch('createTarget', {
             title: this.childTitleField,
             comment: this.childCommentField,
             type: this.modeBtn,
-            color: color,
-            groupId: groupId,
-            expenses: this.expenses,
-            entrances: this.entrances,
+            color: item.color,
+            sectionId: item.sectionId,
+            groupId: item.groupId,
+            expenses: item.expenses,
+            entrances: item.entrances,
             })
             this.titleField = ''
             this.commentsField = ''
@@ -748,31 +864,31 @@
             this.expenses = true
             this.entrances = true
 
-            eventEmitter.$emit('changeItem', 'createdFilter', item)
+            eventEmitter.$emit('changeItem', 'createdTarget', createdItem)
             eventEmitter.$emit('changeColorPicker', '')
           }catch (e){
             // console.log('error')
           }
       },
-      async toEdit(color,groupId){
+      async toEdit(item){
         try{
-          const item = await this.$store.dispatch('editFilter', {
-            id: this.editItem.id,
+          const updatedTarget = await this.$store.dispatch('editTarget', {
+            id: item.id,
             title: this.childTitleField,
             comment: this.childCommentField,
             type: this.modeBtn,
-            color: color,
-            groupId: groupId,
-            expenses: this.expenses,
-            entrances: this.entrances,
+            color: item.color,
+            sectionId: item.sectionId,
+            groupId: item.groupId,
+            expenses: item.expenses,
+            entrances: item.entrances,
             })
             this.titleField = ''
             this.commentsField = ''
             this.modeBtn = ''
             this.expenses = true
             this.entrances = true
-
-            eventEmitter.$emit('changeItem', 'updatedFilter', item)
+            eventEmitter.$emit('changeItem', 'updatedTarget', updatedTarget)
             eventEmitter.$emit('changeColorPicker', '')
           }catch (e){
             // console.log('error')
@@ -780,8 +896,8 @@
       },
       async toRemove(){
       try{
-            await this.$store.dispatch('removeFilter', this.editItem.id)
-            eventEmitter.$emit('changeItem', 'deletedFilter', this.editItem.id)
+            await this.$store.dispatch('removeTarget', this.editItem.id)
+            eventEmitter.$emit('changeItem', 'deletedTarget', this.editItem.id)
             this.titleField = ''
             this.commentsField = ''
             this.modeBtn = ''
@@ -819,3 +935,4 @@
     }
   }
 </script>
+

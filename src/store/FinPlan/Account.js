@@ -135,6 +135,17 @@ export default  {
       throw e
       }
     },
+    async fetchTargets({commit,dispatch}){
+      try{
+        const uid = await dispatch('getUid')
+        let targets = (await firebase.database().ref(`/users/${uid}/targets`).once('value')).val() || {}
+        const targs = Object.keys(targets).map(key=> ({...targets[key],id:key}) )
+        return targs
+      }catch(e){
+      commit('setError', e)
+      throw e
+      }
+    },
     async fetchTags({commit,dispatch}){
       try{
         const uid = await dispatch('getUid')
@@ -196,6 +207,44 @@ export default  {
               dateCreate,
               comments,
             }
+        }catch(e){
+        commit('setError', e)
+        throw e
+        }
+    },
+    async createTarget({commit,dispatch}, {
+      title,
+      comment,
+      type,
+      color,
+      sectionId,
+      groupId,
+      expenses,
+      entrances,
+      }){
+        try{
+          const uid = await dispatch('getUid')
+          const target = await firebase.database().ref(`/users/${uid}/targets`).push({
+            title,
+            comment,
+            type,
+            color,
+            sectionId,
+            groupId,
+            expenses,
+            entrances,
+            })
+            return{
+              id:target.key,
+              title,
+              comment,
+              type,
+              color,
+              sectionId,
+              groupId,
+              expenses,
+              entrances,
+              }
         }catch(e){
         commit('setError', e)
         throw e
@@ -274,7 +323,58 @@ export default  {
       commit('setError', e)
       throw e
       }
-  },
+    },
+    async editTarget({commit,dispatch}, {
+      id,
+      title,
+      comment,
+      type,
+      color,
+      sectionId,
+      groupId,
+      expenses,
+      entrances,
+      }){
+      try{
+        // console.log(
+        //   id,
+        //   title,
+        //   comment,
+        //   type,
+        //   color,
+        //   sectionId,
+        //   groupId,
+        //   expenses,
+        //   entrances)
+        const uid = await dispatch('getUid')
+        await firebase.database().ref(`/users/${uid}/targets`).child(id).update({
+          id,
+          title,
+          comment,
+          type,
+          color,
+          sectionId,
+          groupId,
+          expenses,
+          entrances,
+          })
+          return{
+            id,
+            title,
+            comment,
+            type,
+            color,
+            sectionId,
+            groupId,
+            expenses,
+            entrances,
+          }
+                                                        
+      }catch(e){
+      commit('setError', e)
+      throw e
+      }
+    },
     async createCategory({commit,dispatch}, {
       title,
       comment,
@@ -474,6 +574,15 @@ export default  {
       try{
         const uid = await dispatch('getUid')
         await firebase.database().ref(`/users/${uid}/filters/${id}`).remove()
+      }catch(e){
+      commit('setError', e)
+      throw e
+      }
+    },
+    async removeTarget({commit,dispatch},id){
+      try{
+        const uid = await dispatch('getUid')
+        await firebase.database().ref(`/users/${uid}/targets/${id}`).remove()
       }catch(e){
       commit('setError', e)
       throw e

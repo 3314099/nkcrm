@@ -3,7 +3,6 @@
     <v-btn-toggle
     class="d-flex d-lg-inline-flex d-md-flex"
     >
-
           <v-btn
           v-for="item in colorsArray"
           :key="item"
@@ -15,7 +14,7 @@
           >
             <div class="img img-size">
             <img
-            v-if="color === item"
+            v-if="params.colorPicker === item"
             src="approval64.png"
             alt="approval"
             >
@@ -44,54 +43,37 @@ export default{
   },
   data: ()=>({
       items: [
-      '#DD2C00',
-      '#78909C',
-      '#8D6E63',
-      '#FF7043',
-      '#FF6D00',
-      '#F44336',
-      '#FFAB00',
-      '#FFD600',
-      '#AEEA00',
-      '#64DD17',
-      '#00C853',
-      '#66BB6A',
-      '#9C27B0',
-      '#673AB7',
-      '#3F51B5',
-      '#2196F3',
-      '#03A9F4',
-      '#00BCD4',
-      '#009688',
-      '#CDDC39',
-      '#FF9800',
+        {color: '#37474F', childColor: '#90A4AE'},
+        {color: '#B71C1C', childColor: '#EF5350'},
+        {color: '#880E4F', childColor: '#EC407A'},
+        {color: '#4A148C', childColor: '#AB47BC'},
+        {color: '#673AB7', childColor: '#7E57C2'},
+        {color: '#1A237E', childColor: '#5C6BC0'},
+        {color: '#0D47A1', childColor: '#42A5F5'},
+        {color: '#01579B', childColor: '#29B6F6'},
+        {color: '#006064', childColor: '#26C6DA'},
+        {color: '#004D40', childColor: '#26A69A'},
+        {color: '#1B5E20', childColor: '#66BB6A'},
+        {color: '#33691E', childColor: '#9CCC65'},
+        {color: '#827717', childColor: '#D4E157'},
+        {color: '#F57F17', childColor: '#FFEE58'},
+        {color: '#FF6F00', childColor: '#FFCA28'},
+        {color: '#E65100', childColor: '#FFA726'},
+        {color: '#BF360C', childColor: '#FF7043'},
+        {color: '#4E342E', childColor: '#BCAAA4'},
       ]
   }),
-  created(){
-    eventEmitter.$emit('changeColorPicker', this.color)
-  },
   computed:{
     colorsArray(){
-      const items = this.items
-      const colorsIgnore = this.colorsIgnore;
-      // ES5 syntax
-      const filteredArray = items.filter(function(x) { 
-        return colorsIgnore.indexOf(x) < 0;
-      })
+      let colorsArray = this.items.map(item => item.color).filter(x => !this.colorsIgnore.includes(x))
       if(this.editItem.color){
-        filteredArray.unshift(this.editItem.color)
-      }
-      let slicedArray = filteredArray.slice (0, 10);
-      return slicedArray
-    },
-    color(){
-      if(this.params.colorPicker){
-        return this.params.colorPicker
+        colorsArray.unshift(this.editItem.color)
+        eventEmitter.$emit('changeColorPicker', this.editItem.color)
       }else{
-        return this.colorsArray[0]
+        eventEmitter.$emit('changeColorPicker', colorsArray[0])
       }
-      // #e0e0e0 - серый
-    }
+      return colorsArray.slice (0, 10)
+    },
   },
   methods:{
     changeColor(color){

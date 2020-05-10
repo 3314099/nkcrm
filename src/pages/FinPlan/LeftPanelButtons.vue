@@ -38,6 +38,7 @@ import finPlan from '@/store/FinPlan/finPlan.js'
     mixins:[finPlan],
     data:()=>({
       buttons:[
+        {to:'/targets', icon: 'mdi-target', click:'targets', link:'/targets'},
         {to:'/accounts', icon: 'mdi-credit-card-multiple-outline', click:'accounts', link:'/accounts'},
         {to:'/operations', icon: 'mdi-currency-rub', click:'operations', link:'/operations'},
         {to:'/properties', icon: 'mdi-brightness-7', click:'properties', link:'/properties'},

@@ -1,6 +1,6 @@
 <template>
   <v-card color="basil">
-    <v-card-title class="text-center justify-center py-6">
+    <v-card-title class="text-center justify-center py-1">
       <h1 class="font-weight-bold display-3 basil--text">Настройки</h1>
     </v-card-title>
 
@@ -11,9 +11,14 @@
       grow
     >
       <v-tab
-      :href="'#priority'"
+      :href="'#targets'"
         >
-      Приоритеты
+      Цели
+      </v-tab>
+      <v-tab
+      :href="'#accounts'"
+        >
+      Счета
       </v-tab>
       <v-tab
       :href="'#filters'"
@@ -34,13 +39,27 @@
 
     <v-tabs-items v-model="params.tabBtn">
       <v-tab-item
-      :value="'priority'"
+      :value="'targets'"
       >
         <v-card
           color="basil"
           flat
         >
-          <v-card-text>Приоритеты</v-card-text>
+          <v-card-text>
+            <targets
+            :params="params"
+             />
+            </v-card-text>
+        </v-card>
+      </v-tab-item>
+      <v-tab-item
+      :value="'accounts'"
+      >
+        <v-card
+          color="basil"
+          flat
+        >
+          <v-card-text>Счета</v-card-text>
         </v-card>
       </v-tab-item>
       <v-tab-item
@@ -92,10 +111,11 @@
   import tags from '@/pages/FinPlan/Accounts/tags'
   import categories from '@/pages/FinPlan/Accounts/categories'
   import filters from '@/pages/FinPlan/Accounts/filters'
+  import targets from '@/pages/FinPlan/Accounts/targets'
 
   export default {
     components:{
-      tags, categories, filters
+      targets, tags, categories, filters
     },
     data () {
       return {

@@ -4,7 +4,7 @@ class="d-flex justify-space-between"
 >
   <div class="ma-1">
     <v-card outlined>
-    <LeftPanelButtons 
+    <LeftPanelButtons
     :params="params" 
     />
     <LeftMenu 
@@ -66,8 +66,10 @@ export default{
     categories: [],
     tabBtn: 'priority',
     accounts:[],
+    selectedItemBtnId: '',
     tags:[],
     account:{},
+    targets:[],
     filters:[],
     route: '',
     leftPanelButton: '',
@@ -82,7 +84,7 @@ export default{
     },
 
   }),
-  
+
   async mounted(){
     this.params.leftMenuitems = await this.$store.dispatch('fetchLeftMenuitems')
     this.params.accounts = await this.$store.dispatch('fetchAccounts')
@@ -90,20 +92,12 @@ export default{
     this.params.tags = this.sortObjectsArray(this.params.tags, 'title')
     this.params.filters = await this.$store.dispatch('fetchFilters')
     this.params.filters = this.sortObjectsArray(this.params.filters, 'title')
+    this.params.targets = await this.$store.dispatch('fetchTargets')
+    this.params.targets = this.sortObjectsArray(this.params.targets, 'title')
     this.params.categories = await this.$store.dispatch('fetchCategories')
     this.params.categories = this.sortObjectsArray(this.params.categories, 'title')
     
-    
-    let filter1List = await this.$store.dispatch('fetchFilter1')
-    let arr = []
-         Object.keys(filter1List).forEach(key => {
-          arr.push(filter1List[key].filter1)
-        })
-        // console.log(arr)
-        this.params.filter1List = [...new Set(arr)].sort();
-        // this.typesAccountListCounter++
         this.params.loading = false
-        // this.checkedAccountArray = this.accounts
   },
   created(){
     this.params.route = this.$route.name
@@ -168,6 +162,9 @@ export default{
     eventEmitter.$on('changeColorPicker', (color) =>{
       this.params.colorPicker = color
     })
+    eventEmitter.$on('changeSelectedItemBtnId', (Id) =>{
+      this.params.selectedItemBtnId = Id
+    })
   },
   methods:{
     sortObjectsArray(array, field){
@@ -206,31 +203,50 @@ export default{
     },
     toChangeItem(action,val){
       switch(action) {
+        case 'createdTarget':  
+            this.params.tabBtn = 'targets'
+            this.params.targets.push(val)
+            // this.params.targets = this.sortObjectsArray(this.params.filters, 'title')
+          break
+        case 'updatedTarget':
+          this.params.tabBtn = 'targets'
+          this.params.targets = this.params.targets.map(o => {
+            if (o.id === val.id) {
+              return val
+            }else{
+              return o
+            }
+          })
+          // this.params.targets = this.sortObjectsArray(this.params.filters, 'title')
+          break
+        case 'deletedTarget':
+          this.params.tabBtn = 'targets'
+          this.params.targets = [...this.params.targets].filter(x => x.id !== val)
+          break
+          
         case 'createdFilter':  // if (x === 'value1')
             this.params.tabBtn = 'filters'
             this.params.filters.push(val)
             this.params.filters = this.sortObjectsArray(this.params.filters, 'title')
-            this.counter++
           break
-          case 'updatedFilter':  // if (x === 'value1')
-            for (var k = this.params.filters.length - 1; k >= 0; --k) {
-              if (this.params.filters[k].id === val.id) {
-                  this.params.filters[k] = val;
-              }
+        case 'updatedFilter':  // if (x === 'value1')
+          for (var k = this.params.filters.length - 1; k >= 0; --k) {
+            if (this.params.filters[k].id === val.id) {
+                this.params.filters[k] = val;
             }
-            this.counter++
+          }
           break
-          case 'deletedFilter':  
-            for (var i = this.params.filters.length - 1; i >= 0; --i) {
-              if (this.params.filters[i].id === val) {
-                  this.params.filters.splice(i,1);
-              }
+        case 'deletedFilter':  
+          for (var i = this.params.filters.length - 1; i >= 0; --i) {
+            if (this.params.filters[i].id === val) {
+                this.params.filters.splice(i,1);
             }
-            this.counter++
+          }
           break
-          default:
+        default:
             break
         }
+        this.counter++
     },
     async changeCheckAccount(bool,accountId){
       for (var i = this.params.accounts.length - 1; i >= 0; --i) {
