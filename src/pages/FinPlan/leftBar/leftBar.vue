@@ -1,6 +1,5 @@
 <template>
-  <div>
-    {{visibility}}
+  <div style="max-width: 20px">
     <v-card
     outlined
     >

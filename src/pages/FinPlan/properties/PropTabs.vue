@@ -1,4 +1,5 @@
 <template>
+<div>
   <v-card color="basil">
     <v-card-title class="text-center justify-center py-1">
       <h1 class="font-weight-bold display-3 basil--text">Настройки</h1>
@@ -12,16 +13,19 @@
     >
       <v-tab
       :href="'#targets'"
+      @click="toChangeTabBtn('targets')"
         >
       Цели
       </v-tab>
       <v-tab
       :href="'#accounts'"
+      @click="toChangeTabBtn('accounts')"
         >
       Счета
       </v-tab>
       <v-tab
       :href="'#filters'"
+      @click="toChangeTabBtn('filters')"
         >
       Фильтры
       </v-tab>
@@ -55,12 +59,9 @@
       <v-tab-item
       :value="'accounts'"
       >
-        <v-card
-          color="basil"
-          flat
-        >
-          <v-card-text>Счета</v-card-text>
-        </v-card>
+        <Accounts
+          :params="params"
+        />
       </v-tab-item>
       <v-tab-item
       :value="'filters'"
@@ -106,16 +107,19 @@
       </v-tab-item>
     </v-tabs-items>
   </v-card>
+  </div>
 </template>
 <script>
+  import {eventEmitter} from '@/main'
   import tags from '@/pages/FinPlan/Accounts/tags'
   import categories from '@/pages/FinPlan/Accounts/categories'
   import filters from '@/pages/FinPlan/Accounts/filters'
   import targets from '@/pages/FinPlan/Accounts/targets'
+  import Accounts from '@/pages/FinPlan/Accounts/Accounts'
 
   export default {
     components:{
-      targets, tags, categories, filters
+      targets, Accounts, tags, categories, filters
     },
     data () {
       return {
@@ -129,13 +133,18 @@
       params:{
         type:Object
       }
+    },
+    methods:{
+      toChangeTabBtn(tabBtn){
+        eventEmitter.$emit('changeTabBtn', tabBtn)
+      }
     }
   }
 </script>
 <style>
 /* Helper classes */
 .basil {
-  background-color: #F5F5F5 !important;
+  /* background-color: #F5F5F5 !important; */
 }
 .basil--text {
   color: #356859 !important;

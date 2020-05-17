@@ -4,16 +4,16 @@
 
     
       <Calendar 
-    v-show="calendar"
+    v-if="calendar"
       />
     
       <Calculator 
-    v-show="calculator"
+    v-if="calculator"
       />
       
 
       <Currency 
-    v-show="currency"
+    v-if="currency"
       />
   </div>
 </template>
@@ -43,4 +43,11 @@ export default {
     }
   },
 }
+
+// 3239 msScripting
+// 527 msRendering
+// 82 msPainting
+// 326 msSystem
+// 3650 msIdle
+// 7824 msTotal
 </script>

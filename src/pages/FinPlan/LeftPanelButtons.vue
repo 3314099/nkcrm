@@ -1,9 +1,7 @@
 <template>
-  
-<v-card 
-        class="card"
-      >
+  <div>
         <v-btn-toggle 
+        class="ma-1"
         >
           <v-btn
           v-for="(button, i) in buttons"
@@ -29,7 +27,7 @@
             </v-icon>
           </v-btn>
         </v-btn-toggle>
-    </v-card>
+    </div>
 </template>
 
 <script>
@@ -41,8 +39,8 @@ import finPlan from '@/store/FinPlan/finPlan.js'
         {to:'/targets', icon: 'mdi-target', click:'targets', link:'/targets'},
         {to:'/accounts', icon: 'mdi-credit-card-multiple-outline', click:'accounts', link:'/accounts'},
         {to:'/operations', icon: 'mdi-currency-rub', click:'operations', link:'/operations'},
-        {to:'/properties', icon: 'mdi-brightness-7', click:'properties', link:'/properties'},
         {to:'/statistic', icon: 'mdi-poll', click:'statistic', link:'/statistic'},
+        {to:'/properties', icon: 'mdi-brightness-7', click:'properties', link:'/properties'},
       ]
 
     }),

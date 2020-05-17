@@ -1,6 +1,362 @@
 <template>
 <div>
-  <div class="d-flex justify-start justify-space-between">
+  <!-- <pre>{{fullObjectsArray}}</pre> -->
+  <v-tabs-items v-model="tabModeBtn">
+    <v-tab-item
+      :value="'default'"
+      >
+      <v-card
+        flat
+      >
+        <div class="d-flex justify-start justify-space-between">
+          <div class="d-flex justify-space-between">
+            <v-text-field
+              class="pa-1"
+              style="min-width: 280px"
+              label="Строка поиска"
+              type: String
+              v-model="titleField"
+              dense
+              outlined
+              small
+              clearable
+            >
+            </v-text-field>
+          </div>
+          <div class="d-flex" >
+            <div v-if="modeBtn === ''" class="d-flex flex-wrap justify-space-around">
+                <div 
+                  class="pa-1"
+                >
+                  <v-btn
+                  class="mx-1"
+                  outlined
+                  color="primary" 
+                  @click= "toChangeModeBtn('section', 'create')"
+                  >
+                    Создать целевой раздел
+                  </v-btn>
+                </div> 
+                <div 
+                  class="pa-1"
+                >
+                  <v-btn
+                  class="mx-1"
+                  outlined
+                  color="primary" 
+                  @click= "toChangeModeBtn('group', 'create')"
+                  >
+                    Создать группу целей
+                  </v-btn>
+                </div> 
+                <div 
+                  class="pa-1"
+                >
+                  <v-btn
+                  class="mx-1"
+                  outlined
+                  color="primary" 
+                  @click= "toChangeModeBtn('item', 'create')"
+                  >
+                  Создать цель
+                </v-btn>
+                </div>
+            </div>
+          </div>
+        </div>
+      </v-card>
+    </v-tab-item>
+
+
+      <v-tab-item
+      :value="'section'"
+      >
+      <v-card
+          flat
+      >
+      <div class="d-flex justify-start justify-space-between">
+          <div>
+            <div class="d-flex justify-space-between">
+              <div>
+                <v-text-field
+                  class="pa-1"
+                  style="min-width: 400px"
+                  label="Наименование целевого раздела"
+                  type: String
+                  v-model="titleField"
+                  dense
+                  :error-messages="childTitleFieldErrors"
+                  hint="Не менее 3-х и не более 15-ти символов"
+                  outlined
+                  small
+                  clearable
+                  counter="15"
+                  @blur="$v.childTitleField.$touch()"
+                >
+                </v-text-field>
+              </div>
+              <div>
+                <colorPicker
+                :params="params"
+                :editItem="editItem"
+                :colorsIgnore="colorsIgnore"
+                />
+              </div>
+            </div>
+            <div v-if="modeBtn">
+              <v-text-field
+                class="pa-1 pb-0"
+                label="Комментарий  целевому разделу"
+                v-model="commentField"
+                :error-messages="childCommentFieldErrors"
+                dense
+                rows="1"
+                hint="не более 100 символов"
+                outlined
+                small
+                clearable
+                counter="100"
+                @blur="$v.childCommentField.$touch()"
+              >
+              </v-text-field>
+            </div>
+            <v-col
+              cols="12" 
+              v-if="modeBtn"
+              class="d-flex justify-start pa-0 my-0"
+            >
+              <v-col
+              cols="4"
+              class="pa-0 my-0"
+              >
+                <h3>Типы операций:</h3>
+              </v-col>
+              <v-col
+              class="pa-0 my-0"
+              cols="4"
+              >
+                <v-switch
+                  class="pa-0 my-0"
+                  v-model="expenses"
+                  label="Расходы"
+                  color="success"
+                  :error-messages="switchesErrors"
+                  @change="$v.switches.$touch()"
+                >
+                </v-switch>
+              </v-col>
+              <v-col
+              class="pa-0 my-0"
+              cols="4"
+              >
+                <v-switch
+                  class="pa-0 my-0"
+                  v-model="entrances"
+                  label="Поступления"
+                  color="primary"
+                  :error-messages="switchesErrors"
+                  @change="$v.switches.$touch()"
+                >
+                </v-switch>
+              </v-col>
+            </v-col>
+          </div>
+          
+          <div class="d-flex" >
+            <div class="d-flex justify-space-around flex-column align-center ">
+              <div v-if="mode !== 'create'">
+                <v-btn
+                    @click="button('remove')"
+                    class="mx-2"
+                    outlined
+                    color="red" 
+                    >Удалить
+                    </v-btn>
+              </div>
+              <div>
+                <v-btn
+                    @click="button('cancel')"
+                    class="mx-2"
+                    outlined
+                    color="green" 
+                    >Отменить
+                    </v-btn>
+              </div>
+              <div>
+                <v-btn
+                    class="mx-2"
+                    outlined
+                    color="primary" 
+                    @click="button(mode)"
+                    >
+                    Сохранить
+                  </v-btn>
+              </div>
+            </div>
+          </div>
+        </div>
+      </v-card>
+      </v-tab-item>
+
+
+      <v-tab-item
+      :value="'group'"
+      >
+      <v-card
+          flat
+        >
+      <div class="d-flex justify-start justify-space-between">
+          <div>
+            <div class="d-flex justify-space-between">
+              <div>
+                <v-text-field
+                  class="pa-1"
+                  style="min-width: 400px"
+                  label="Наименование цели"
+                  type: String
+                  v-model="titleField"
+                  dense
+                  :error-messages="childTitleFieldErrors"
+                  hint="Не менее 3-х и не более 30-ти символов"
+                  outlined
+                  small
+                  clearable
+                  counter="30"
+                  @blur="$v.childTitleField.$touch()"
+                >
+                </v-text-field>
+              </div>
+              <div>
+                 <v-text-field
+                 :error-messages="selectFieldErrors"
+                  class="pa-1"
+                  value="id"
+                  v-model="selectField"
+                  label="Выберите целевой раздел в левом меню"
+                  outlined
+                  readonly
+                  dense
+                  @blur="$v.valSelectField.$touch()"
+                ></v-text-field>
+                <v-autocomplete
+                  style="min-width: 460px"
+                  class="pa-1"
+                  v-model="selectField"
+                  :auto-select-first="true"
+                  name="id"
+                  no-data-text="Список пуст"
+                  :items="sectionsObjectsArray"
+                  item-text="title"
+                  item-value="id"
+                  dense
+                  small
+                  outlined
+                  label="Выберите целевой раздел"
+                ></v-autocomplete>
+              </div>
+            </div>
+            <div>
+              <v-text-field
+                class="pa-1 pb-0"
+                label="Комментарий к целевому разделу"
+                v-model="commentField"
+                :error-messages="childCommentFieldErrors"
+                dense
+                rows="1"
+                hint="не более 100 символов"
+                outlined
+                small
+                clearable
+                counter="100"
+                @blur="$v.childCommentField.$touch()"
+
+              >
+              </v-text-field>
+            </div>
+            <v-col
+              cols="12" 
+              v-if="modeBtn"
+              class="d-flex justify-start pa-0 my-0"
+            >
+              <v-col
+              cols="4"
+              class="pa-0 my-0"
+              >
+                <h3>Типы операций:</h3>
+              </v-col>
+              <v-col
+              class="pa-0 my-0"
+              cols="4"
+              >
+                <v-switch
+                    class="pa-0 my-0"
+                    v-model="expenses"
+                    label="Расходы"
+                    color="success"
+                    :error-messages="switchesErrors"
+                    @change="$v.switches.$touch()"
+                  ></v-switch>
+              </v-col>
+              <v-col
+              class="pa-0 my-0"
+              cols="4"
+              >
+                <v-switch
+                  class="pa-0 my-0"
+                  v-model="entrances"
+                  label="Поступления"
+                  color="primary"
+                  :error-messages="switchesErrors"
+                  @change="$v.switches.$touch()"
+                ></v-switch>
+              </v-col>
+            </v-col>
+          </div>
+          <div class="d-flex" >
+            <div class="d-flex justify-space-around flex-column align-center ">
+              <div v-if="mode !== 'create'">
+                <v-btn
+                    @click="button('remove')"
+                    class="mx-2"
+                    outlined
+                    color="red" 
+                    >Удалить
+                    </v-btn>
+              </div>
+              <div>
+                <v-btn
+                    @click="button('cancel')"
+                    class="mx-2"
+                    outlined
+                    color="green" 
+                    >Отменить
+                    </v-btn>
+              </div>
+              <div>
+                <v-btn
+                    class="mx-2"
+                    outlined
+                    color="primary" 
+                    @click="button(mode)"
+                    >
+                    Сохранить
+                  </v-btn>
+              </div>
+            </div>
+          </div>
+        </div>
+      </v-card>
+      </v-tab-item>
+
+
+      
+      <v-tab-item
+      :value="'item'"
+      >
+        <v-card
+          flat
+        >
+<div class="d-flex justify-start justify-space-between">
     <div>
       <div class="d-flex justify-space-between">
         <div>
@@ -36,7 +392,7 @@
             :auto-select-first="true"
             name="id"
             no-data-text="Список пуст"
-            :items="selectListArray"
+            :items="groupsObjectsArray"
             item-text="title"
             item-value="id"
             dense
@@ -184,6 +540,18 @@
       </div>
     </div>
   </div>
+      </v-card>
+      </v-tab-item>
+    </v-tabs-items>
+
+
+
+
+
+
+
+
+  
     <v-row no-gutters style="flex-wrap: nowrap;">
       <v-col>
         <v-divider class="my-3"></v-divider>
@@ -192,7 +560,15 @@
         cols="2"
         class="d-flex justify-center"
       >
-      <h3> Целевые разделы</h3>
+      <v-chip
+      small
+      color="teal"
+      :text-color= "searchBtn === 'sections' ? 'white' : 'black'"
+      :outlined= "searchBtn === 'sections' ? false : true"
+      @click="toChangeSearchBtn('sections')"
+      >
+      <h3>Целевые разделы</h3>
+      </v-chip>
       </v-col>
       <v-col>
         <v-divider class="my-3"></v-divider>
@@ -200,10 +576,10 @@
     </v-row>
     <div class="d-flex justify-center">
     <div class="d-flex justify-center">
-      <h3 v-if="!this.groupsArray.length" class="mt-0">Список пуст</h3>
+      <h3 v-if="!this.sectionsObjectsArray.length" class="mt-0">Список пуст</h3>
     </div>
   <v-container
-        v-if="this.groupsArray.length"
+        v-if="this.sectionsObjectsArray.length"
         id="scroll-target"
         style="max-width: 1000px"
         class="d-flex row my-1 mx-2 pt-1 overflow-x-auto"
@@ -211,7 +587,7 @@
 <div class="d-flex ">
         <v-tooltip 
         top
-        v-for="item in targetsArray"
+        v-for="item in sectionsObjectsArray"
         :key="item.id"
     >
       <template v-slot:activator="{ on }">
@@ -225,7 +601,7 @@
       text-color="'black'"
       filter: true
       class="mx-1"
-      :close="item.id !== 'withoutGroup' ? true : false"
+      :close="item.role !== 'admin' ? true : false"
       close-icon= 'mdi-lead-pencil'
       @click:close="toChangeModeBtn('section', 'edit', item)"
       @click="selectItemBtnId(item.id)"
@@ -253,7 +629,15 @@
         cols="2"
         class="d-flex justify-center"
       >
-      <h3> Целевые группы</h3>
+      <v-chip
+      small
+      color="teal"
+      :text-color= "searchBtn === 'groups' ? 'white' : 'black'"
+      :outlined= "searchBtn === 'groups' ? false : true"
+      @click="toChangeSearchBtn('groups')"
+      >
+      <h3>Целевые группы</h3>
+      </v-chip>
       </v-col>
       <v-col>
         <v-divider class="my-3"></v-divider>
@@ -273,7 +657,7 @@
         <div class="d-flex ">
           <v-tooltip 
           top
-          v-for="group in groupsArray"
+          v-for="group in groupsObjectsArray"
           :key="group.id"
           >
             <template v-slot:activator="{ on }">
@@ -283,11 +667,11 @@
                 :ripple="false"
                 :color="group.color"
                 :outlined="params.selectedItemBtnId ? false : true"
-                style="border-width: 4px"
+                :style="'border-width: 4px;' + 'border-style:' + group.border"
                 text-color="'black'"
                 filter: true
                 class="mx-1"
-                :close="group.id !== 'withoutGroup' ? true : false"
+                :close="group.role !== 'admin' ? true : false"
                 close-icon= 'mdi-lead-pencil'
                 @click:close="toChangeModeBtn('group', 'edit', group)"
                 @click="selectItemBtnId(group.id)"
@@ -314,7 +698,15 @@
         cols="1"
         class="d-flex justify-center"
       >
-      <h3> Цели</h3>
+      <v-chip
+      small
+      color="teal"
+      :text-color= "searchBtn === 'items' ? 'white' : 'black'"
+      :outlined= "searchBtn === 'items' ? false : true"
+      @click="toChangeSearchBtn('items')"
+      >
+      <h3>Цели</h3>
+      </v-chip>
          
       </v-col>
       <v-col
@@ -325,7 +717,7 @@
     </v-row>
     <div class="d-flex justify-center">
     <div class="d-flex justify-center">
-    <h3 v-if="!this.sortedFullItemsArrayByTitleField.length" class="ma-4 pr-0">Список пуст</h3>
+    <h3 v-if="!this.itemsArray.length" class="ma-4 pr-0">Список пуст</h3>
     </div>
   <v-container
         id="scroll-target"
@@ -336,20 +728,20 @@
           <v-tooltip 
         max-width= 400
         top
-        v-for="item in sortedFullItemsArrayByTitleField"
+        v-for="item in itemsArray"
         :key="item.id"
     >
       <template v-slot:activator="{ on }">
         <v-chip
         v-on="on"
         outlined
-        style="border-width: 4px"
+        :style="'border-width: 4px;' + 'border-style:' + item.border"
       label
       :color="item.color"
       text-color="'black'"
       filter: true
       class="ma-1"
-      close
+      :close="item.role !== 'admin' ? true : false"
       close-icon="mdi-lead-pencil"
       @click:close="toChangeModeBtn('item', 'edit', item)"
       @click="changeCheck(tag.id)"
@@ -375,11 +767,63 @@
       </v-container>
       </div>
   </div>
-  <targetsTable
-  :itemsArray="params.targets"
-  :toChangeModeBtn="toChangeModeBtn"
-  :modeBtn="modeBtn"
-  />
+  <div>
+    <v-row no-gutters style="flex-wrap: nowrap;">
+      <v-col
+      >
+        <v-divider class="my-3"></v-divider>
+      </v-col>
+      <v-col
+        cols="6"
+        class="d-flex justify-center"
+      >
+      <v-chip
+      class="mx-2"
+      small
+      color="teal"
+      :text-color= "targetTable === 'sections' ? 'white' : 'black'"
+      :outlined= "targetTable === 'sections' ? false : true"
+      @click="toChangeTargetTable('sections')"
+      >
+      <h3>Целевые разделы</h3>
+      </v-chip>
+      <v-chip
+      class="mx-2"
+      small
+      color="teal"
+      :text-color= "targetTable === 'groups' ? 'white' : 'black'"
+      :outlined= "targetTable === 'groups' ? false : true"
+      @click="toChangeTargetTable('groups')"
+      >
+      <h3>Целевые группы</h3>
+      </v-chip>
+      <v-chip
+      class="mx-2"
+      small
+      color="teal"
+      :text-color= "targetTable === 'targets' ? 'white' : 'black'"
+      :outlined= "targetTable === 'targets' ? false : true"
+      @click="toChangeTargetTable('targets')"
+      >
+      <h3>Цели</h3>
+      </v-chip>
+         
+      </v-col>
+      <v-col
+        
+      >
+        <v-divider class="my-3"></v-divider>
+      </v-col>
+    </v-row>
+
+    <targetsTable
+    :targetTable="targetTable"
+    :itemsArray="params.targets"
+    :toChangeModeBtn="toChangeModeBtn"
+    :modeBtn="modeBtn"
+    :params="params"
+    />
+  </div>
   
 
 
@@ -387,12 +831,13 @@
   </div>
 </template>
 <script>
+  import ruEnSearch from '@/store/components/ruEnSearch.js'
   import { validationMixin } from 'vuelidate'
   import {eventEmitter} from '@/main'
   import colorPicker from "@/components/colorPicker"
   import targetsTable from "@/pages/FinPlan/Accounts/targetsTable"
   export default {
-    mixins: [validationMixin],
+    mixins: [validationMixin, ruEnSearch],
     validations: {
       childTitleField: {
         unique: function(){
@@ -407,6 +852,15 @@
           return this.valСhildComentField.length
           },
       },
+      selectField: {
+        select: function(){
+          if(this.selectField){
+            return false
+          }else{
+            return true
+          }
+        }
+      },
       switches:{
         empty: function(){
           return this.valEmptySwitches
@@ -416,11 +870,11 @@
     components:{colorPicker, targetsTable},
     data(){
       return {
+        targetTable: 'targets',
         mode:'',
         color:'',
         modeBtn: '',
         editItem: {},
-        selectField: 'withoutGroup',
         type: '',
         titleField: '',
         titleLable: 'Строка поиска',
@@ -431,6 +885,7 @@
         entrances: true,
         errorBtn: false,
         itemsWithWGGroup: false,
+        searchBtn: 'items'
         // rules
         // titleFieldRules: [
         // v => !!v || 'Обязательное поле',
@@ -440,8 +895,8 @@
       }
     },
     created(){
-      if(this.params.selectedItemBtnId){
-        this.selectField = this.params.selectedItemBtnId
+      if(this.params.selectedTarget){
+        this.selectField = this.params.selectedTarget.title
       }
     },
     props:{
@@ -450,30 +905,27 @@
       }
     },
     computed:{
-      translate(){
-        let val = this.childTitleField
-        let translate = {
-          ru: '',
-          en: ''
+      selectField:{
+        get: function () {
+          let val=''
+        if(this.params.selectedTarget.type === 'section'){
+          val = this.params.selectedTarget.title
+        }else{
+          val=''
         }
-        var map = {
-          'q' : 'й', 'w' : 'ц', 'e' : 'у', 'r' : 'к', 't' : 'е', 'y' : 'н', 'u' : 'г', 'i' : 'ш', 'o' : 'щ', 'p' : 'з', '[' : 'х', ']' : 'ъ', 'a' : 'ф', 's' : 'ы', 'd' : 'в', 'f' : 'а', 'g' : 'п', 'h' : 'р', 'j' : 'о', 'k' : 'л', 'l' : 'д', ';' : 'ж', '\'' : 'э', 'z' : 'я', 'x' : 'ч', 'c' : 'с', 'v' : 'м', 'b' : 'и', 'n' : 'т', 'm' : 'ь', ',' : 'б', '.' : 'ю'
-          };
-          for (var i = 0; i < val.length; i++) {
-            let count = 0
-            for(var key in map){
-              if(val[i] === key || val[i] === map[key]){
-                translate.ru = translate.ru + map[key]
-                translate.en = translate.en + key
-                count++
-              }
-            }
-                if(!count){
-                  translate.ru = translate.ru + val[i]
-                  translate.en = translate.en + val[i]
-                }
-          }
-          return translate
+        return val
+        },
+        set: function () {
+          return ''
+          // https://vuejs.org/v2/guide/computed.html#Computed-Setter
+        }
+      },
+      tabModeBtn(){
+        if(this.modeBtn){
+          return this.modeBtn
+        }else{
+          return 'default'
+        }
       },
       switches(){
         return this.expenses || this.entrances
@@ -559,12 +1011,150 @@
         !this.$v.childCommentField.length && errors.push('Не более 100 символов')
         return errors
       },
+      selectFieldErrors(){
+        let errors = []
+        if (!this.$v.selectField.$dirty) return errors
+        !this.$v.selectField.select && errors.push('Выберите раздел в левом меню')
+        return errors
+      },
       switchesErrors(){
         let errors = []
         if (!this.$v.switches.$dirty) return errors
         !this.$v.switches.empty && errors.push('Выбрать минимум одно значение')
         return errors
       },
+      fullObjectsArray(){ // создает массив всех айтемов с присвоением цвета, и битых групп.
+        let fullArrayItems = this.params.targets
+        // let colorsArray = this.params.colorsArray.map(item => item.color).filter(x => !this.colorsIgnore.includes(x))
+        // создаем массив имеющихся sections
+        // const sectionsArray = fullArray.map(o => o.type === '').filter(x => !this.colorsIgnore.includes(x))
+
+        let sectionsArray = fullArrayItems.filter(item => item.type === 'section')
+        let groupsArray = fullArrayItems.filter(item => item.type === 'group')
+        let itemsArray = fullArrayItems.filter(item => item.type === 'item')
+        // const colorsArray = this.params.colorsArray
+        // console.log(this.params.colorsArray)
+        // ищем битые разделы у групп
+
+        groupsArray.forEach((group) => { 
+          let withSection = sectionsArray.filter(sectionItem => { // массив групп с небитыми разделами
+            if(sectionItem.id === group.sectionId){
+              group.color = sectionItem.color // присваивает группе цвет раздела
+              group.border = 'solid'
+              return true
+            }else{
+              return false
+            }
+          })
+          if(!withSection.length){
+            group.sectionId = 'withoutSection'
+            // item.color = colorsArray[colorCounter].color
+            group.border = 'dashed'
+          }
+        })
+        // let colorCounter = 0
+        // for (let i = 0; i < groupsArray.length; i++) {
+        //   if (groupsArray[i].sectionId === 'withoutSection'){
+        //     groupsArray[i].color = colorsArray[0].color
+        //     // console.log(colorsArray)
+        //   }
+        // }
+        // присваиваем группам withoutSection цвет из массиваа с border dashed
+
+        // ищем битые группы у айтемов
+        itemsArray.forEach((item) => {
+          let withGroup = groupsArray.filter(groupItem => { // массив айтемов с небитыми группами
+            if(groupItem.id === item.groupId){
+              item.color = groupItem.color // присваивает айтему цвет группы
+              item.border = groupItem.border
+              return true
+            }else{
+              return false
+            }
+          })
+          if(!withGroup.length){
+            item.sectionId = 'withoutSection'
+            item.groupId = 'withoutGroup'
+            item.color = ''
+          }
+        })
+        // присваиваем childColor группам и айтемам по основному цвету(color) => childColor
+
+          // this.params.colorsArray.forEach((color) =>{ 
+          //   if(item.type === 'section' && item.color === color.color){
+          //     item.childColor = color.childColor
+          //   }
+          //   if(item.type === 'section' && item.color === color.color){
+          //     item.childColor = color.childColor
+          //   }
+          // })
+        // fullArray = fullArray.map(o => {
+        //   this.params.colors.filter(color =>{
+        //     o.color === color.color ? o.childColor = color.color
+        //   })
+        //     if (o.id === val.id) {
+        //       return val
+        //     }else{
+        //       return o
+        //     }
+        //   })
+
+
+
+        
+        return fullArrayItems
+      },
+      sectionsObjectsArray(){
+        let sectionsArray = [{
+          id: 'withoutSection',
+          role: 'admin',
+          type: 'section',
+          sectionId: "",
+          groupId: "",
+          color: "",
+          title: "Без раздела",
+          comment: "Не имеет дочерних элементов",
+          entrances: true,
+          expenses: true,
+        }]
+    
+        sectionsArray = sectionsArray.concat([...this.params.targets].filter(o => o.type === 'section'))
+        return sectionsArray
+      },
+      groupsObjectsArray(){
+        let groupsArray = [{
+          id: 'withoutGroup',
+          role: 'admin',
+          type: 'group',
+          sectionId: "withoutSection",
+          groupId: "",
+          color: "",
+          title: "Без группы",
+          comment: "Не имеет дочерних элементов",
+          entrances: true,
+          expenses: true,
+        }]
+    
+        groupsArray = groupsArray.concat([...this.fullObjectsArray].filter(o => o.type === 'group'))
+        return groupsArray
+      },
+      itemsArray(){
+        let itemsArray = [...this.fullObjectsArray].filter(o => o.type === 'item')
+        return itemsArray
+      },
+      targetsArray(){
+        return this.params.targets
+      },
+
+
+
+
+
+
+
+
+
+
       fullItemsAndGroupsArray(){
         return this.params.filters 
       },
@@ -624,7 +1214,7 @@
           return arr
         }else{
           return  this.fullItemsArray.filter((item)=>{ //фильтрация по titleField
-            return ((item.title.toLowerCase()).includes(this.translate.ru.toLowerCase(),"") || (item.title.toLowerCase()).includes(this.translate.en.toLowerCase(),""))
+            return ((item.title.toLowerCase()).includes(this.ruEnSearch.ru.toLowerCase(),"") || (item.title.toLowerCase()).includes(this.ruEnSearch.en.toLowerCase(),""))
             })
         }
       },
@@ -648,12 +1238,9 @@
         }
         return groupsArray
       },
-      targetsArray(){
-        return this.params.targets
-      },
+      
       colorsIgnore(){
         let arr = [] 
-
         for (var k = this.targetsArray.length - 1; k >= 0; --k) {
             arr.push(this.targetsArray[k].color)
         }
@@ -667,6 +1254,12 @@
       }
     },
     methods:{
+      toChangeSearchBtn(val){
+        this.searchBtn = val
+      },
+      toChangeTargetTable(val){
+        this.targetTable = val
+      },
       filteredGroupsArrayBysortedFullItemsArrayByTitleField(groupsArray){ // получает computed fullItemsArray и возвращает фильтрованый список групп
         let newGroupsArray = []
         const uniqueArray = [...new Set(this.sortedFullItemsArrayByTitleField.map(item => item.groupId))]; // получаем массив уникальных id по groupId
@@ -694,7 +1287,7 @@
           newGroupsArray.push({id:'withoutGroup',color:'',comment:'',groupId:'',title:'Без группы',type:'group'})
         newGroupsArray = newGroupsArray.concat(this.fullGroupsArray)
         newGroupsArray =  newGroupsArray.filter((item)=>{
-          return ((item.title.toUpperCase()).includes(this.translate.ru.toUpperCase()) || (item.title.toUpperCase()).includes(this.translate.en.toUpperCase()))
+          return ((item.title.toUpperCase()).includes(this.ruEnSearch.ru.toUpperCase()) || (item.title.toUpperCase()).includes(this.ruEnSearch.en.toUpperCase()))
           })
         return newGroupsArray
       },
@@ -707,41 +1300,32 @@
         this.$v.$reset()
         switch(this.modeBtn) {
           case 'section':  
-            if(this.mode === 'create'){
-              this.titleLable = 'Создание целевого раздела'
-              this.commentLable = 'Комментарий к целевому разделу'
-            } else { // edit
+              this.targetTable = 'sections'
+            if(this.mode === 'edit'){
               this.editItem = editItem
               eventEmitter.$emit('changeColorPicker', this.editItem.color)
-              this.titleLable = 'Изменение целевого раздела'
-              this.commentLable = 'Комментарий к целевому разделу'
               this.titleField = this.editItem.title
               this.commentField = this.editItem.comment
+              this.expenses = this.editItem.expenses
+              this.entrances = this.editItem.entrances
             }
             break
           case 'group':  
-            if(this.mode === 'create'){
-              this.titleLable = 'Создание группы целей'
-              this.commentLable = 'Комментарий к группе целей'
-              this.selectLable = 'Выберите целевой раздел'
-            } else { // edit
+              this.targetTable = 'groups'
+            if(this.mode === 'edit'){
               this.editItem = editItem
               eventEmitter.$emit('changeColorPicker', this.editItem.color)
-              this.titleLable = 'Изменение группы целей'
-              this.commentLable = 'Комментарий к группе целей'
               this.titleField = this.editItem.title
               this.commentField = this.editItem.comment
+              this.expenses = this.editItem.expenses
+              this.entrances = this.editItem.entrances
             }
             break
           case 'item':
-            if(this.mode === 'create'){
-              this.titleLable = 'Создание цели'
-              this.commentLable = 'Комментарий к цели'
-              this.selectLable = 'Выберите группу целей'
-            } else { // edit
-              this.titleLable = 'Изменение цели'
-              this.commentLable = 'Комментарий к цели'
+            this.targetTable = 'targets'
+            if(this.mode === 'edit'){
               this.editItem = editItem
+              eventEmitter.$emit('changeColorPicker', this.editItem.color)
               this.titleField = this.editItem.title
               this.selectField = this.editItem.groupId
               this.commentField = this.editItem.comment
@@ -750,11 +1334,11 @@
             }
             break
           default:
-            this.titleLable = 'Строка поиска'
             this.commentLable = ''
             this.selectLable = ''
             this.expenses = true
             this.entrances = true
+            this.targetTable = 'sections'
           break
         }
       },
@@ -768,25 +1352,25 @@
             }
             switch(this.modeBtn){
               case 'section':
-                item.color = this.params.colorPicker,
+                item.color = this.params.colorPicker
                 item.sectionId = ''
                 item.groupId = ''
-                item.expenses = false,
-                item.entrances = false
+                item.expenses = this.expenses,
+                item.entrances = this.entrances
                 break
               case 'group':
-                item.color = this.params.colorPicker,
+                item.color = this.params.colorPicker
                 item.sectionId = this.selectField
                 item.groupId = ''
-                item.expenses = false,
-                item.entrances = false
+                item.expenses = this.expenses,
+                item.entrances = this.entrances
                 break
               case 'item':
-                item.color = this.params.colorPicker,
-                item.sectionId = this.selectField
-                item.groupId = ''
-                item.expenses = false,
-                item.entrances = false
+                item.color = this.params.colorPicker
+                item.sectionId = ''
+                item.groupId = this.selectField
+                item.expenses = this.expenses
+                item.entrances = this.entrances
                 break
             }
             this.toCreate(item)
@@ -802,22 +1386,24 @@
                 item.color = this.params.colorPicker
                 item.sectionId = ''
                 item.groupId = ''
-                item.expenses = false,
-                item.entrances = false
+                item.expenses = this.expenses,
+                item.entrances = this.entrances
                 break
               case 'group':
-                item.color = this.params.colorPicker
-                item.sectionId = ''
+                item.id = this.editItem.id
+                item.color = ''
+                item.sectionId = this.selectField
                 item.groupId = ''
-                item.expenses = false,
-                item.entrances = false
+                item.expenses = this.expenses,
+                item.entrances = this.entrances
                 break
               case 'item':
-                item.color = this.params.colorPicker,
+                item.id = this.editItem.id
+                item.color = this.params.colorPicker
                 item.sectionId = ''
-                item.groupId = ''
-                item.expenses = false,
-                item.entrances = false
+                item.groupId = this.selectField
+                item.expenses = this.expenses,
+                item.entrances = this.entrances
                 break
             }
             this.toEdit(item)
@@ -828,9 +1414,9 @@
           default: // cancel
             this.$v.$reset()
             this.modeBtn = ''
-            this.titleLable = 'Строка поиска'
             this.commentLable = ''
             this.selectLable = ''
+            this.targetTable = 'targets'
             if(this.params.selectedItemBtnId){
               this.selectField = this.params.selectedItemBtnId
             }else{
@@ -858,14 +1444,14 @@
             expenses: item.expenses,
             entrances: item.entrances,
             })
+            eventEmitter.$emit('changeItem', 'createdTarget', createdItem)
+            eventEmitter.$emit('changeColorPicker', '')
+            this.modeBtn = ''
             this.titleField = ''
             this.commentsField = ''
-            this.modeBtn = ''
             this.expenses = true
             this.entrances = true
 
-            eventEmitter.$emit('changeItem', 'createdTarget', createdItem)
-            eventEmitter.$emit('changeColorPicker', '')
           }catch (e){
             // console.log('error')
           }
