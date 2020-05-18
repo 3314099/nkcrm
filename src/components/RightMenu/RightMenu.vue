@@ -1,53 +1,58 @@
 <template>
   <div>
     <RightPanelButtons />
-
-    
-      <Calendar 
-    v-if="calendar"
-      />
-    
-      <Calculator 
-    v-if="calculator"
-      />
-      
-
-      <Currency 
-    v-if="currency"
-      />
+    <v-window
+      v-model="RMWin"
+      class="elevation-1"
+      vertical
+    >
+      <v-window-item>
+        <Calendar/>
+      </v-window-item>
+      <v-window-item>
+        <Calculator/>
+      </v-window-item>
+      <v-window-item>
+        <Currency/>
+      </v-window-item>
+    </v-window>
   </div>
 </template>
-
 <script>
 import RightPanelButtons from '@/components/RightMenu/RightPanelBattons'
 import Calendar from '@/components/Calendar'
 import Calculator from '@/components/Calculator'
 import Currency from '@/components/Currency'
-
 export default {
   components:{
       RightPanelButtons,
-      Calendar, 
+      Calendar,
       Calculator,
       Currency
     },
-    computed: {
-    calendar(){
-      return this.$store.getters.computedCalendar
-    },
-    calculator(){
-      return this.$store.getters.computedCalculator
-    },
-    currency(){
-      return this.$store.getters.computedCurrency
+  computed:{
+    // rightBarMode(){
+    //   return this.$store.getters.rightBarMode
+    // },
+    RMWin(){
+      let LMWin = 0
+      switch (this.$store.getters.rightBarMode) {
+        case 'calendar':
+          LMWin = 0
+          break
+        case 'calc':
+          LMWin = 1
+          break
+        case 'currency':
+          LMWin = 2
+          break
+        default:
+          LMWin = 0
+          break
+      }
+      return LMWin
     }
-  },
+  }
 }
 
-// 3239 msScripting
-// 527 msRendering
-// 82 msPainting
-// 326 msSystem
-// 3650 msIdle
-// 7824 msTotal
 </script>

@@ -25,37 +25,37 @@
           </div>
           <div class="d-flex" >
             <div v-if="modeBtn === ''" class="d-flex flex-wrap justify-space-around">
-                <div 
+                <div
                   class="pa-1"
                 >
                   <v-btn
                   class="mx-1"
                   outlined
-                  color="primary" 
+                  color="primary"
                   @click= "toChangeModeBtn('section', 'create')"
                   >
                     Создать целевой раздел
                   </v-btn>
-                </div> 
-                <div 
+                </div>
+                <div
                   class="pa-1"
                 >
                   <v-btn
                   class="mx-1"
                   outlined
-                  color="primary" 
+                  color="primary"
                   @click= "toChangeModeBtn('group', 'create')"
                   >
                     Создать группу целей
                   </v-btn>
-                </div> 
-                <div 
+                </div>
+                <div
                   class="pa-1"
                 >
                   <v-btn
                   class="mx-1"
                   outlined
-                  color="primary" 
+                  color="primary"
                   @click= "toChangeModeBtn('item', 'create')"
                   >
                   Создать цель
@@ -121,7 +121,7 @@
               </v-text-field>
             </div>
             <v-col
-              cols="12" 
+              cols="12"
               v-if="modeBtn"
               class="d-flex justify-start pa-0 my-0"
             >
@@ -161,7 +161,7 @@
               </v-col>
             </v-col>
           </div>
-          
+
           <div class="d-flex" >
             <div class="d-flex justify-space-around flex-column align-center ">
               <div v-if="mode !== 'create'">
@@ -169,7 +169,7 @@
                     @click="button('remove')"
                     class="mx-2"
                     outlined
-                    color="red" 
+                    color="red"
                     >Удалить
                     </v-btn>
               </div>
@@ -178,7 +178,7 @@
                     @click="button('cancel')"
                     class="mx-2"
                     outlined
-                    color="green" 
+                    color="green"
                     >Отменить
                     </v-btn>
               </div>
@@ -186,7 +186,7 @@
                 <v-btn
                     class="mx-2"
                     outlined
-                    color="primary" 
+                    color="primary"
                     @click="button(mode)"
                     >
                     Сохранить
@@ -274,7 +274,7 @@
               </v-text-field>
             </div>
             <v-col
-              cols="12" 
+              cols="12"
               v-if="modeBtn"
               class="d-flex justify-start pa-0 my-0"
             >
@@ -319,7 +319,7 @@
                     @click="button('remove')"
                     class="mx-2"
                     outlined
-                    color="red" 
+                    color="red"
                     >Удалить
                     </v-btn>
               </div>
@@ -328,7 +328,7 @@
                     @click="button('cancel')"
                     class="mx-2"
                     outlined
-                    color="green" 
+                    color="green"
                     >Отменить
                     </v-btn>
               </div>
@@ -336,7 +336,7 @@
                 <v-btn
                     class="mx-2"
                     outlined
-                    color="primary" 
+                    color="primary"
                     @click="button(mode)"
                     >
                     Сохранить
@@ -349,7 +349,7 @@
       </v-tab-item>
 
 
-      
+
       <v-tab-item
       :value="'item'"
       >
@@ -421,7 +421,7 @@
         </v-text-field>
       </div>
       <v-col
-      cols="12" 
+      cols="12"
       v-if="modeBtn && modeBtn !== 'section'"
       class="d-flex justify-start pa-0 my-0"
       >
@@ -458,7 +458,7 @@
             ></v-switch>
         </v-col>
       </v-col>
-      
+
     </div>
 
     <div class="d-flex" >
@@ -468,7 +468,7 @@
               @click="button('remove')"
               class="mx-2"
               outlined
-              color="red" 
+              color="red"
               >Удалить
               </v-btn>
         </div>
@@ -477,7 +477,7 @@
               @click="button('cancel')"
               class="mx-2"
               outlined
-              color="green" 
+              color="green"
               >Отменить
               </v-btn>
         </div>
@@ -485,7 +485,7 @@
           <v-btn
               class="mx-2"
               outlined
-              color="primary" 
+              color="primary"
               @click="button(mode)"
               :disabled="errorBtn"
               >
@@ -496,41 +496,41 @@
 
 
       <div v-if="modeBtn === ''" class="d-flex flex-wrap justify-space-around">
-          <div 
+          <div
             class="pa-1"
           >
             <v-btn
             width=""
             class="mx-1"
             outlined
-            color="primary" 
+            color="primary"
             @click= "toChangeModeBtn('section', 'create')"
             :disabled="errorBtn"
             >
               Создать целевой раздел
             </v-btn>
-          </div> 
-          <div 
+          </div>
+          <div
             class="pa-1"
           >
             <v-btn
             width=""
             class="mx-1"
             outlined
-            color="primary" 
+            color="primary"
             @click= "toChangeModeBtn('group', 'create')"
             :disabled="errorBtn"
             >
               Создать группу целей
             </v-btn>
-          </div> 
-          <div 
+          </div>
+          <div
          class="pa-1">
             <v-btn
             width=""
             class="mx-1"
             outlined
-            color="primary" 
+            color="primary"
             @click= "toChangeModeBtn('item', 'create')"
             :disabled="errorBtn"
             >
@@ -551,7 +551,7 @@
 
 
 
-  
+
     <v-row no-gutters style="flex-wrap: nowrap;">
       <v-col>
         <v-divider class="my-3"></v-divider>
@@ -564,7 +564,7 @@
       small
       color="teal"
       :text-color= "searchBtn === 'sections' ? 'white' : 'black'"
-      :outlined= "searchBtn === 'sections' ? false : true"
+      :outlined= "searchBtn === 'sections'"
       @click="toChangeSearchBtn('sections')"
       >
       <h3>Целевые разделы</h3>
@@ -585,7 +585,7 @@
         class="d-flex row my-1 mx-2 pt-1 overflow-x-auto"
       >
 <div class="d-flex ">
-        <v-tooltip 
+        <v-tooltip
         top
         v-for="item in sectionsObjectsArray"
         :key="item.id"
@@ -596,12 +596,11 @@
       label
       :ripple="false"
       :color="item.color"
-      :outlined="params.selectedItemBtnId ? false : true"
+      :outlined="!params.selectedItemBtnId"
       style="border-width: 4px"
       text-color="'black'"
-      filter: true
       class="mx-1"
-      :close="item.role !== 'admin' ? true : false"
+      :close="item.role !== 'admin'"
       close-icon= 'mdi-lead-pencil'
       @click:close="toChangeModeBtn('section', 'edit', item)"
       @click="selectItemBtnId(item.id)"
@@ -609,9 +608,10 @@
       {{ item.title }}
     </v-chip>
     </template>
-      <span 
+      <span
       >
-      <div v-if="item.comment">{{item.comment}}</div>
+      <div v-if="item.comment">{{item.comment}}
+      </div>
       <div v-else>Нет комментариев</div>
       </span>
     </v-tooltip>
@@ -655,7 +655,7 @@
         class="d-flex row my-1 mx-2 pt-1 overflow-x-auto"
       >
         <div class="d-flex ">
-          <v-tooltip 
+          <v-tooltip
           top
           v-for="group in groupsObjectsArray"
           :key="group.id"
@@ -669,7 +669,6 @@
                 :outlined="params.selectedItemBtnId ? false : true"
                 :style="'border-width: 4px;' + 'border-style:' + group.border"
                 text-color="'black'"
-                filter: true
                 class="mx-1"
                 :close="group.role !== 'admin' ? true : false"
                 close-icon= 'mdi-lead-pencil'
@@ -679,7 +678,7 @@
               {{ group.title }}
               </v-chip>
             </template>
-            <span 
+            <span
             >
             <div v-if="group.comment">{{group.comment}}</div>
             <div v-else>Нет комментариев</div>
@@ -707,10 +706,10 @@
       >
       <h3>Цели</h3>
       </v-chip>
-         
+
       </v-col>
       <v-col
-        
+
       >
         <v-divider class="my-3"></v-divider>
       </v-col>
@@ -725,7 +724,7 @@
         class="row my-1 mx-2 pt-1 overflow-x-auto"
       >
 <div class="d-flex ">
-          <v-tooltip 
+          <v-tooltip
         max-width= 400
         top
         v-for="item in itemsArray"
@@ -749,7 +748,7 @@
       {{ item.title }}
     </v-chip>
     </template>
-      <span 
+      <span
       >
       <div >Целевая группа: {{ item | tips(fullGroupsArray) }} </div>
       <div >-----------------</div>
@@ -807,10 +806,10 @@
       >
       <h3>Цели</h3>
       </v-chip>
-         
+
       </v-col>
       <v-col
-        
+
       >
         <v-divider class="my-3"></v-divider>
       </v-col>
@@ -824,7 +823,7 @@
     :params="params"
     />
   </div>
-  
+
 
 
 
@@ -950,12 +949,12 @@
         switch(this.modeBtn) {
           case 'group':
               GroupsArray = GroupsArray.filter((item)=>{
-                return (item.title.toUpperCase() === childTitleField.toUpperCase())})  
+                return (item.title.toUpperCase() === childTitleField.toUpperCase())})
               GroupsArray.length ? unique = false : unique = true
             break
           case 'item':
             ItemsArray = ItemsArray.filter((item)=>{
-              return (item.title.toUpperCase() === childTitleField.toUpperCase())})  
+              return (item.title.toUpperCase() === childTitleField.toUpperCase())})
             ItemsArray.length ? unique = false : unique = true
             break
           default:
@@ -1025,7 +1024,7 @@
       },
       fullObjectsArray(){ // создает массив всех айтемов с присвоением цвета, и битых групп.
         let fullArrayItems = this.params.targets
-        // let colorsArray = this.params.colorsArray.map(item => item.color).filter(x => !this.colorsIgnore.includes(x))
+        // let colorsArray = this.$store.getters.colorsArray.map(item => item.color).filter(x => !this.colorsIgnore.includes(x))
         // создаем массив имеющихся sections
         // const sectionsArray = fullArray.map(o => o.type === '').filter(x => !this.colorsIgnore.includes(x))
 
@@ -1036,7 +1035,7 @@
         // console.log(this.params.colorsArray)
         // ищем битые разделы у групп
 
-        groupsArray.forEach((group) => { 
+        groupsArray.forEach((group) => {
           let withSection = sectionsArray.filter(sectionItem => { // массив групп с небитыми разделами
             if(sectionItem.id === group.sectionId){
               group.color = sectionItem.color // присваивает группе цвет раздела
@@ -1080,7 +1079,7 @@
         })
         // присваиваем childColor группам и айтемам по основному цвету(color) => childColor
 
-          // this.params.colorsArray.forEach((color) =>{ 
+          // this.params.colorsArray.forEach((color) =>{
           //   if(item.type === 'section' && item.color === color.color){
           //     item.childColor = color.childColor
           //   }
@@ -1101,7 +1100,7 @@
 
 
 
-        
+
         return fullArrayItems
       },
       sectionsObjectsArray(){
@@ -1117,7 +1116,7 @@
           entrances: true,
           expenses: true,
         }]
-    
+
         sectionsArray = sectionsArray.concat([...this.params.targets].filter(o => o.type === 'section'))
         return sectionsArray
       },
@@ -1134,7 +1133,7 @@
           entrances: true,
           expenses: true,
         }]
-    
+
         groupsArray = groupsArray.concat([...this.fullObjectsArray].filter(o => o.type === 'group'))
         return groupsArray
       },
@@ -1156,13 +1155,13 @@
 
 
       fullItemsAndGroupsArray(){
-        return this.params.filters 
+        return this.$store.getters.filters
       },
       fullGroupsArray(){  // создаем массив групп внутри функции
       return this.fullItemsAndGroupsArray.filter((item)=>{
           return (item.type === 'group')
           })
-      
+
       },
       fullItemsArray(){ // создаем массив айтемов с учетом пустых и битых gropId с присвоением цвета
         let fullItemsArray = this.fullItemsAndGroupsArray.filter((item)=>{
@@ -1190,7 +1189,7 @@
           }else{
             this.toChangeItemsWithWGGroup(false)
           }
-          const selectedItemBtnId = this.params.selectedItemBtnId 
+          const selectedItemBtnId = this.params.selectedItemBtnId
           if(selectedItemBtnId){
             fullItemsArray = this.fullItemsAndGroupsArray.filter((item)=>{
               return (item.groupId === selectedItemBtnId)})
@@ -1198,8 +1197,8 @@
           // fullItemsArray =  fullItemsArray.filter((item)=>{ //фильтрация по titleField
           // return (item.title.toUpperCase()).match(this.childTitleField.toUpperCase())
           // })
-          return fullItemsArray 
-        
+          return fullItemsArray
+
       },
       sortedFullItemsArrayByTitleField(){
         if(this.modeBtn === 'group'){
@@ -1231,16 +1230,16 @@
             groupsArray = this.filteredGroupsArrayBysortedFullItemsArrayByTitleField(groupsArray) // фильтрует массив групп по массиву айтемов с учетом значения в titleField
           }
         }
-        const selectedItemBtnId = this.params.selectedItemBtnId 
+        const selectedItemBtnId = this.params.selectedItemBtnId
         if(selectedItemBtnId){ // формирует массив групп с учетом нажатой группы
           groupsArray = groupsArray.filter((item)=>{
             return (item.id === selectedItemBtnId)})
         }
         return groupsArray
       },
-      
+
       colorsIgnore(){
-        let arr = [] 
+        let arr = []
         for (var k = this.targetsArray.length - 1; k >= 0; --k) {
             arr.push(this.targetsArray[k].color)
         }
@@ -1299,22 +1298,22 @@
         this.mode = mode
         this.$v.$reset()
         switch(this.modeBtn) {
-          case 'section':  
+          case 'section':
               this.targetTable = 'sections'
             if(this.mode === 'edit'){
               this.editItem = editItem
-              eventEmitter.$emit('changeColorPicker', this.editItem.color)
+              this.$store.dispatch('colorPicker', this.editItem.color)
               this.titleField = this.editItem.title
               this.commentField = this.editItem.comment
               this.expenses = this.editItem.expenses
               this.entrances = this.editItem.entrances
             }
             break
-          case 'group':  
+          case 'group':
               this.targetTable = 'groups'
             if(this.mode === 'edit'){
               this.editItem = editItem
-              eventEmitter.$emit('changeColorPicker', this.editItem.color)
+              this.$store.dispatch('colorPicker', this.editItem.color)
               this.titleField = this.editItem.title
               this.commentField = this.editItem.comment
               this.expenses = this.editItem.expenses
@@ -1325,7 +1324,7 @@
             this.targetTable = 'targets'
             if(this.mode === 'edit'){
               this.editItem = editItem
-              eventEmitter.$emit('changeColorPicker', this.editItem.color)
+              this.$store.dispatch('colorPicker', this.editItem.color)
               this.titleField = this.editItem.title
               this.selectField = this.editItem.groupId
               this.commentField = this.editItem.comment
@@ -1352,21 +1351,21 @@
             }
             switch(this.modeBtn){
               case 'section':
-                item.color = this.params.colorPicker
+                item.color = this.$store.getters.colorPicker
                 item.sectionId = ''
                 item.groupId = ''
                 item.expenses = this.expenses,
                 item.entrances = this.entrances
                 break
               case 'group':
-                item.color = this.params.colorPicker
+                item.color = this.$store.getters.colorPicker
                 item.sectionId = this.selectField
                 item.groupId = ''
                 item.expenses = this.expenses,
                 item.entrances = this.entrances
                 break
               case 'item':
-                item.color = this.params.colorPicker
+                item.color = this.$store.getters.colorPicker
                 item.sectionId = ''
                 item.groupId = this.selectField
                 item.expenses = this.expenses
@@ -1383,7 +1382,7 @@
             switch(this.modeBtn){
               case 'section':
                 item.id = this.editItem.id
-                item.color = this.params.colorPicker
+                item.color = this.$store.getters.colorPicker
                 item.sectionId = ''
                 item.groupId = ''
                 item.expenses = this.expenses,
@@ -1399,7 +1398,7 @@
                 break
               case 'item':
                 item.id = this.editItem.id
-                item.color = this.params.colorPicker
+                item.color = this.$store.getters.colorPicker
                 item.sectionId = ''
                 item.groupId = this.selectField
                 item.expenses = this.expenses,
@@ -1428,7 +1427,6 @@
             this.commentField = ''
             this.expenses = true
             this.entrances = true
-            eventEmitter.$emit('changeColorPicker', '')
           break
         }
       },
@@ -1445,7 +1443,7 @@
             entrances: item.entrances,
             })
             eventEmitter.$emit('changeItem', 'createdTarget', createdItem)
-            eventEmitter.$emit('changeColorPicker', '')
+          this.$store.dispatch('colorPicker', '')
             this.modeBtn = ''
             this.titleField = ''
             this.commentsField = ''
@@ -1475,7 +1473,6 @@
             this.expenses = true
             this.entrances = true
             eventEmitter.$emit('changeItem', 'updatedTarget', updatedTarget)
-            eventEmitter.$emit('changeColorPicker', '')
           }catch (e){
             // console.log('error')
           }

@@ -7,6 +7,7 @@ import CopyToClipboard from '@/store/ChangeButtons/CopyToClipboard.js'
 import VueClipboard from 'vue-clipboard2'
 import auth from '@/store/auth.js'
 import Account from '@/store/FinPlan/Account.js'
+import Filters from '@/store/FinPlan/Filters.js'
 
 
 Vue.use(Vuex)
@@ -20,14 +21,15 @@ export default new Vuex.Store({
 		LeftChangeButtons,
 		RightChangeButtons,
     auth,
-    Account
+    Account,
+    Filters
 	},
 	state: {
     error: null
 	},
 	mutations: {
     setError(state,error){
-      
+
       console.log(error)
       state.error = error
     },

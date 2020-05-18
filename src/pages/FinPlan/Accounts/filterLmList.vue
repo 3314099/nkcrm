@@ -21,15 +21,14 @@
         <v-expansion-panel-header
         class="grey white--text"
         >Header {{ item }}
-        <v-switch v-model="showMessages" label="Show messages"></v-switch>
-        
+
         </v-expansion-panel-header>
         <v-expansion-panel-content
         style="background: blue; text: red"
         >
           {{item}}
         </v-expansion-panel-content>
-        
+
       </v-expansion-panel>
     </v-expansion-panels>
   </div>

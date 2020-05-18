@@ -10,9 +10,9 @@
   class="ma-0 pa-1 pl-1"
   >
   <div class="font-italic caption width">
-    </div>  
+    </div>
           <v-btn
-          @click="toChangeCheckLMB()" 
+          @click="toChangeCheckLMB()"
           small
           icon>
           <v-icon color="black">mdi-check-box-outline</v-icon>
@@ -27,7 +27,7 @@
             <v-icon :color="item.textColor">mdi-checkbox-blank-outline</v-icon>
           </v-btn> -->
   <v-btn
-  
+
   :text="params.selectedTarget.id !== 'allTargets' ? true :  false"
   :outlined="params.selectedTarget.id === 'allTargets' ? true : false"
   small
@@ -57,10 +57,10 @@
   >
   <div class="font-italic caption width">
     {{(item.btnId) | countAccounts(params.accounts)}}
-    </div>  
+    </div>
           <v-btn
           v-if="item.checked"
-          @click="toChangeCheckLMB(false,item.btnId)" 
+          @click="toChangeCheckLMB(false,item.btnId)"
           :disabled= params.btnDisabled
           small
           icon>
@@ -76,11 +76,11 @@
             <v-icon :color="item.textColor">mdi-checkbox-blank-outline</v-icon>
           </v-btn>
   <v-btn
-  
+
   :color="item.textColor"
   :text="params.selectedTarget.id === item.id ? false :  true"
   :outlined="params.selectedTarget.id === item.id ? true : false"
-  
+
   small
   @click="toChangeTargetBtn(item.id)"
   >
@@ -95,7 +95,7 @@
                     :content="111 | visibility(params.visibility)"
                   >
                   </v-badge>
-                  
+
   </v-card-title>
   </v-card>
  </v-container>
@@ -110,9 +110,9 @@
   class="ma-0 pa-1 pl-1"
   >
   <div class="font-italic caption width">
-    </div>  
+    </div>
           <v-btn
-          @click="toChangeCheckLMB()" 
+          @click="toChangeCheckLMB()"
           small
           icon>
           <v-icon color="black">mdi-check-box-outline</v-icon>
@@ -127,7 +127,7 @@
             <v-icon :color="item.textColor">mdi-checkbox-blank-outline</v-icon>
           </v-btn> -->
   <v-btn
-  
+
   :text="params.selectedTarget !== 'allTargets' ? true :  false"
   :outlined="params.selectedTarget === 'allTargets' ? true : false"
   small
@@ -145,8 +145,8 @@
 
 
     </div>
-    
-    
+
+
 </template>
 
 <script>
@@ -155,13 +155,13 @@ import LeftMenu from '@/store/FinPlan/LeftMenu.js'
 import Targets from '@/store/FinPlan/Targets.js'
   export default {
     mixins: [LeftMenu, Targets],
-    
+
 
 
 
     data: () => ({
       btnDisabled: false,
-      
+
       panel: 0,
       inset: true,
        checkbox: true,
@@ -181,7 +181,7 @@ import Targets from '@/store/FinPlan/Targets.js'
         let fullArrayItems = targets
         let sectionsArray = fullArrayItems.filter(item => item.type === 'section')
         let groupsArray = fullArrayItems.filter(item => item.type === 'group')
-        groupsArray.forEach((group) => { 
+        groupsArray.forEach((group) => {
           let withSection = sectionsArray.filter(sectionItem => { // массив групп с небитыми разделами
             if(sectionItem.id === group.sectionId){
               group.color = sectionItem.color // присваивает группе цвет раздела
@@ -194,11 +194,12 @@ import Targets from '@/store/FinPlan/Targets.js'
             group.sectionId = 'withoutSection'
           }
         })
+        let colorsArray = this.$store.getters.colorsArray
         for (let i = 0; i < groupsArray.length; i++) {
-          for (let k = 0; k < this.params.colorsArray.length; k++) {
-            if(groupsArray[i].color === this.params.colorsArray[k].color && groupsArray[i].type === 'group'){
-              groupsArray[i].color = this.params.colorsArray[k].childColor
-              groupsArray[i].badgeColor = this.params.colorsArray[k].color
+          for (let k = 0; k < colorsArray.length; k++) {
+            if(groupsArray[i].color === colorsArray[k].color && groupsArray[i].type === 'group'){
+              groupsArray[i].color = colorsArray[k].childColor
+              groupsArray[i].badgeColor = colorsArray[k].color
             }
           }
         }

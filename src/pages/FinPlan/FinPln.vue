@@ -1,14 +1,14 @@
 <template>
-<div 
+<div
 class="d-flex justify-space-between"
 
 >
   <div class="ma-1" style="max-width: 347px">
     <v-card outlined>
     <LeftPanelButtons
-    :params="params" 
+    :params="params"
     />
-    <leftMenuTabs 
+    <leftMenuTabs
     :params="params"
     />
     </v-card>
@@ -32,10 +32,10 @@ class="d-flex justify-space-between"
     />
   </div>
 
-  <div class="ma-1">
+  <div class="ma-1" style="width: 278px">
     <RightMenu />
   </div>
-  
+
 </div>
 </template>
 <script>
@@ -63,31 +63,25 @@ export default{
     counter: 0,
 
     params: {
-    leftMenuMode: 'targets',
-    // leftMenuMode: 'accounts',
-    colorsArray: [],
-    colorPicker: '',
-    categories: [],
-    tabBtn: 'priority',
-    selectedTarget: {
-      id: 'allTargets'
-    },
-    accounts:[],
-    selectedItemBtnId: '',
-    tags:[],
-    account:{},
-    targets:[],
-    filters:[],
-    route: '',
-    leftPanelButton: '',
-    visibility: true,
-    overlay: false,
-    banner:'',
-    loading: true,
-    leftMenuButton: 0,
-    leftMenuButtonColor: '',
-    btnDisabled: false,
-    leftMenuitems: [],
+      categories: [],
+      selectedTarget: {
+        id: 'allTargets'
+      },
+      accounts:[],
+      selectedItemBtnId: '',
+      tags:[],
+      account:{},
+      targets:[],
+      route: '',
+      leftPanelButton: '',
+      visibility: true,
+      overlay: false,
+      banner:'',
+      loading: true,
+      leftMenuButton: 0,
+      leftMenuButtonColor: '',
+      btnDisabled: false,
+      leftMenuitems: [],
     },
 
   }),
@@ -96,39 +90,14 @@ export default{
     this.params.leftMenuitems = await this.$store.dispatch('fetchLeftMenuitems')
     this.params.accounts = await this.$store.dispatch('fetchAccounts')
     this.params.tags = await this.$store.dispatch('fetchTags')
-    this.params.tags = this.sortObjectsArray(this.params.tags, 'title')
-    this.params.filters = await this.$store.dispatch('fetchFilters')
-    this.params.filters = this.sortObjectsArray(this.params.filters, 'title')
+    // this.params.tags = this.sortObjectsArray(this.params.tags, 'title')
+    await this.$store.dispatch('fetchFilters')
+
     this.params.targets = await this.$store.dispatch('fetchTargets')
-    this.params.targets = this.sortObjectsArray(this.params.targets, 'title')
+    // this.params.targets = this.sortObjectsArray(this.params.targets, 'title')
     this.params.categories = await this.$store.dispatch('fetchCategories')
-    this.params.categories = this.sortObjectsArray(this.params.categories, 'title')
-    this.params.colorsArray = [
-        {color: '#039BE5', childColor: '#E1F5FE'},
-        {color: '#D81B60', childColor: '#F8BBD0'},
-        {color: '#00897B', childColor: '#B2DFDB'},
-        {color: '#F4511E', childColor: '#FFCCBC'},
-        {color: '#8E24AA', childColor: '#E1BEE7'},
-        {color: '#37474F', childColor: '#90A4AE'},
-        {color: '#B71C1C', childColor: '#EF5350'},
-        {color: '#880E4F', childColor: '#EC407A'},
-        {color: '#4A148C', childColor: '#AB47BC'},
-        {color: '#673AB7', childColor: '#7E57C2'},
-        {color: '#1A237E', childColor: '#5C6BC0'},
-        {color: '#0D47A1', childColor: '#42A5F5'},
-        {color: '#01579B', childColor: '#29B6F6'},
-        {color: '#006064', childColor: '#26C6DA'},
-        {color: '#004D40', childColor: '#26A69A'},
-        {color: '#1B5E20', childColor: '#66BB6A'},
-        {color: '#33691E', childColor: '#9CCC65'},
-        {color: '#827717', childColor: '#D4E157'},
-        {color: '#F57F17', childColor: '#FFEE58'},
-        {color: '#FF6F00', childColor: '#FFCA28'},
-        {color: '#E65100', childColor: '#FFA726'},
-        {color: '#BF360C', childColor: '#FF7043'},
-        {color: '#4E342E', childColor: '#BCAAA4'},
-      ]
-    
+    // this.params.categories = this.sortObjectsArray(this.params.categories, 'title')
+
         this.params.loading = false
   },
   created(){
@@ -143,8 +112,8 @@ export default{
         this.toChangeTargetBtn(target)
     }),
 
-    
-    
+
+
     eventEmitter.$on('leftPanelButtons', (value) =>{
       this.params.leftPanelButton = value
       this.params.route = this.$route.name
@@ -201,9 +170,6 @@ export default{
     eventEmitter.$on('changeItem', (action,val) =>{
       this.toChangeItem(action,val)
     })
-    eventEmitter.$on('changeColorPicker', (color) =>{
-      this.params.colorPicker = color
-    })
     eventEmitter.$on('changeSelectedItemBtnId', (Id) =>{
       this.params.selectedItemBtnId = Id
     })
@@ -212,19 +178,17 @@ export default{
     toChangeTargetBtn(target){
         this.params.selectedTarget = target
     },
-    sortObjectsArray(array, field){
-      return [...array].sort(( a, b ) => a[field] > b[field] ? 1 : -1)
-    },
+
     sort_by(field, reverse, primer){
-      var key = primer ? 
-          function(x) {return primer(x[field])} : 
+      var key = primer ?
+          function(x) {return primer(x[field])} :
           function(x) {return x[field]};
 
       reverse = !reverse ? 1 : -1;
 
       return function (a, b) {
           return a = key(a), b = key(b), reverse * ((a > b) - (b > a));
-        } 
+        }
     },
     toChangeCategory(action,val){
         switch(action) {
@@ -233,7 +197,7 @@ export default{
           break
           case 'createdCategory':  // if (x === 'value1')
             this.params.categories.push(val)
-            this.params.categories = this.sortObjectsArray(this.params.categories, 'title')
+            // this.params.categories = this.sortObjectsArray(this.params.categories, 'title')
             this.counter++
           break
           case 'toCreateSubCategory':  // if (x === 'value1')
@@ -248,7 +212,7 @@ export default{
     },
     toChangeItem(action,val){
       switch(action) {
-        case 'createdTarget':  
+        case 'createdTarget':
             this.params.tabBtn = 'targets'
             this.params.targets.push(val)
             // this.params.targets = this.sortObjectsArray(this.params.filters, 'title')
@@ -268,26 +232,26 @@ export default{
           this.params.tabBtn = 'targets'
           this.params.targets = [...this.params.targets].filter(x => x.id !== val)
           break
-          
-        case 'createdFilter':  // if (x === 'value1')
-            this.params.tabBtn = 'filters'
-            this.params.filters.push(val)
-            this.params.filters = this.sortObjectsArray(this.params.filters, 'title')
-          break
-        case 'updatedFilter':  // if (x === 'value1')
-          for (var k = this.params.filters.length - 1; k >= 0; --k) {
-            if (this.params.filters[k].id === val.id) {
-                this.params.filters[k] = val;
-            }
-          }
-          break
-        case 'deletedFilter':  
-          for (var i = this.params.filters.length - 1; i >= 0; --i) {
-            if (this.params.filters[i].id === val) {
-                this.params.filters.splice(i,1);
-            }
-          }
-          break
+
+        // case 'createdFilter':  // if (x === 'value1')
+        //     this.params.tabBtn = 'filters'
+        //     this.params.filters.push(val)
+        //     // this.params.filters = this.sortObjectsArray(this.$store.getters.filters, 'title')
+        //   break
+        // case 'updatedFilter':  // if (x === 'value1')
+        //   for (var k = this.params.filters.length - 1; k >= 0; --k) {
+        //     if (this.params.filters[k].id === val.id) {
+        //         this.params.filters[k] = val;
+        //     }
+        //   }
+        //   break
+        // case 'deletedFilter':
+        //   for (var i = this.params.filters.length - 1; i >= 0; --i) {
+        //     if (this.params.filters[i].id === val) {
+        //         this.params.filters.splice(i,1);
+        //     }
+        //   }
+        //   break
         default:
             break
         }
@@ -302,7 +266,7 @@ export default{
       this.counter++
       try{
           await this.$store.dispatch('changeCheckedAccount', {bool, accountId})
-    
+
           }catch (e){
             console.log('error')
           }
@@ -320,7 +284,7 @@ export default{
       try{
         // console.log(this.params.accounts)
             await this.$store.dispatch('changeCheckedAccountsArray', accounts)
-      
+
             // this.$store.dispatch('changeSnackBar',{
             // timeout: 3000,
             // text: 'Изменения сохранены',
@@ -426,5 +390,5 @@ export default{
    padding-top: 0;
    padding-bottom: 0;
  }
- 
+
 </style>

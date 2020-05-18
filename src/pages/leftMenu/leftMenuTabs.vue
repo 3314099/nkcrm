@@ -6,12 +6,12 @@
       vertical
     >
       <v-window-item>
-        <LeftMenu 
+        <LeftMenu
         :params="params"
         />
       </v-window-item>
       <v-window-item>
-        <leftMenuTargets 
+        <leftMenuTargets
         :params="params"
         />
       </v-window-item>
@@ -29,7 +29,7 @@ import leftMenuTargets from '@/pages/leftMenu/leftMenuTargets'
 import filterLmList from '@/pages/FinPlan/Accounts/filterLmList'
   export default {
     components:{
-      leftMenuTargets, 
+      leftMenuTargets,
       LeftMenu,
       filterLmList
       },
@@ -37,9 +37,12 @@ import filterLmList from '@/pages/FinPlan/Accounts/filterLmList'
       params:Object
     },
     computed:{
+      leftMenuMode(){
+        return this.$store.getters.leftMenuMode
+      },
       LMWin(){
         let LMWin = 0
-        switch (this.params.leftMenuMode) {
+        switch (this.$store.getters.leftMenuMode) {
           case 'accounts':
               LMWin = 0
             break

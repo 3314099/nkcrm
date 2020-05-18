@@ -13,12 +13,12 @@ export default  {
     //       // property doesn't exist on either object
     //       return 0;
     //     }
-    
+
     //     const varA = (typeof a[key] === 'string')
     //       ? a[key].toUpperCase() : a[key];
     //     const varB = (typeof b[key] === 'string')
     //       ? b[key].toUpperCase() : b[key];
-    
+
     //     let comparison = 0;
     //     if (varA > varB) {
     //       comparison = 1;
@@ -52,7 +52,7 @@ export default  {
     //  eventEmitter.$emit('changeCheckedAccountArray', check, item)
     // console.log(check,item.id)
     },
-    
+
     openBanner(banner, account){
         if(banner === ''){
           eventEmitter.$emit('draggable', true)
@@ -84,7 +84,7 @@ export default  {
       }
 
     },
-    
+
     async fetchAccounts({commit,dispatch}){
       try{
         const uid = await dispatch('getUid')
@@ -93,10 +93,10 @@ export default  {
         // const acts = []
         // Object.keys(accounts).forEach(key => {
         //   acts.push({
-        //     categoryTypeAccount: accounts[key].categoryTypeAccount, 
-        //     categoryAccount: accounts[key].categoryAccount, 
-        //     title: accounts[key].title, 
-        //     type: accounts[key].type, 
+        //     categoryTypeAccount: accounts[key].categoryTypeAccount,
+        //     categoryAccount: accounts[key].categoryAccount,
+        //     title: accounts[key].title,
+        //     type: accounts[key].type,
         //     bill: accounts[key].bill,
         //     currancy: accounts[key].currancy,
         //     comments: accounts[key].comments,
@@ -124,17 +124,7 @@ export default  {
       throw e
       }
     },
-    async fetchFilters({commit,dispatch}){
-      try{
-        const uid = await dispatch('getUid')
-        let filters = (await firebase.database().ref(`/users/${uid}/filters`).once('value')).val() || {}
-        const fils = Object.keys(filters).map(key=> ({...filters[key],id:key}) )
-        return fils
-      }catch(e){
-      commit('setError', e)
-      throw e
-      }
-    },
+
     async fetchTargets({commit,dispatch}){
       try{
         const uid = await dispatch('getUid')
@@ -155,7 +145,7 @@ export default  {
         // tags = tgs.sort(this.compareValues('title')); // - по возрастанию
         //tags = tgs.sort(compareValues('title', 'desc')); // - по убыванию
 
-        
+
         return tgs
       }catch(e){
       commit('setError', e)
@@ -250,80 +240,8 @@ export default  {
         throw e
         }
     },
-    async createFilter({commit,dispatch}, {
-      title,
-      comment,
-      type,
-      color,
-      groupId,
-      expenses,
-      entrances,
-      }){
-        try{
-          const uid = await dispatch('getUid')
-          const category = await firebase.database().ref(`/users/${uid}/filters`).push({
-            title,
-            comment,
-            type,
-            color,
-            groupId,
-            expenses,
-            entrances,
-            })
-            return{
-              id:category.key,
-              title,
-              comment,
-              type,
-              color,
-              groupId,
-              expenses,
-              entrances,
-              }
-        }catch(e){
-        commit('setError', e)
-        throw e
-        }
-    },
-    async editFilter({commit,dispatch}, {
-      id,
-      title,
-      comment,
-      type,
-      color,
-      groupId,
-      expenses,
-      entrances,
-      }){
-      try{
-        const uid = await dispatch('getUid')
-  
-        await firebase.database().ref(`/users/${uid}/filters`).child(id).update({
-          id,
-          title,
-          comment,
-          type,
-          color,
-          groupId,
-          expenses,
-          entrances,
-          })
-          return{
-            id,
-            title,
-            comment,
-            type,
-            color,
-            groupId,
-            expenses,
-            entrances,
-          }
-                                                        
-      }catch(e){
-      commit('setError', e)
-      throw e
-      }
-    },
+
+
     async editTarget({commit,dispatch}, {
       id,
       title,
@@ -369,7 +287,7 @@ export default  {
             expenses,
             entrances,
           }
-                                                        
+
       }catch(e){
       commit('setError', e)
       throw e
@@ -435,7 +353,7 @@ export default  {
         acts[accounts[i].id] = accounts[i]
         // delete acts[accounts[i].id].id;
       }
-      
+
         try{
           // accounts.forEach(function(elem) {
           //   acts[elem.id] = elem;
@@ -518,7 +436,7 @@ export default  {
             dateCreate,
             comments,
           }
-                                                        
+
       }catch(e){
       commit('setError', e)
       throw e
@@ -542,7 +460,7 @@ export default  {
         title,
         comment,
         }
-                                                      
+
     }catch(e){
     commit('setError', e)
     throw e
@@ -570,15 +488,7 @@ export default  {
       throw e
       }
     },
-    async removeFilter({commit,dispatch},id){
-      try{
-        const uid = await dispatch('getUid')
-        await firebase.database().ref(`/users/${uid}/filters/${id}`).remove()
-      }catch(e){
-      commit('setError', e)
-      throw e
-      }
-    },
+
     async removeTarget({commit,dispatch},id){
       try{
         const uid = await dispatch('getUid')

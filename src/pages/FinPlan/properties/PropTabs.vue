@@ -13,19 +13,19 @@
     >
       <v-tab
       :href="'#targets'"
-      @click="toChangeTabBtn('targets')"
+      @click="toChangePropertyTabMode('targets')"
         >
       Цели
       </v-tab>
       <v-tab
       :href="'#accounts'"
-      @click="toChangeTabBtn('accounts')"
+      @click="toChangePropertyTabMode('accounts')"
         >
       Счета
       </v-tab>
       <v-tab
       :href="'#filters'"
-      @click="toChangeTabBtn('filters')"
+      @click="toChangePropertyTabMode('filters')"
         >
       Фильтры
       </v-tab>
@@ -36,12 +36,13 @@
       </v-tab>
       <v-tab
       :href="'#tags'"
+      @click="toChangePropertyTabMode('filters')"
       >
       Теги
       </v-tab>
     </v-tabs>
 
-    <v-tabs-items v-model="params.tabBtn">
+    <v-tabs-items v-model="propertyTabMode">
       <v-tab-item
       :value="'targets'"
       >
@@ -110,7 +111,6 @@
   </div>
 </template>
 <script>
-  import {eventEmitter} from '@/main'
   import tags from '@/pages/FinPlan/Accounts/tags'
   import categories from '@/pages/FinPlan/Accounts/categories'
   import filters from '@/pages/FinPlan/Accounts/filters'
@@ -121,13 +121,10 @@
     components:{
       targets, Accounts, tags, categories, filters
     },
-    data () {
-      return {
-        items: [
-          'Appetizers', 'Entrees', 'Deserts', 'Cocktails',
-        ],
-        text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
-      }
+    computed:{
+        propertyTabMode(){
+          return this.$store.getters.propertyTabMode
+        }
     },
     props:{
       params:{
@@ -135,9 +132,9 @@
       }
     },
     methods:{
-      toChangeTabBtn(tabBtn){
-        eventEmitter.$emit('changeTabBtn', tabBtn)
-      }
+      toChangePropertyTabMode(val){
+        this.$store.dispatch('propertyTabMode', val)
+      },
     }
   }
 </script>

@@ -8,6 +8,7 @@ export default {
 		upperCase: false,
 		lineText: false,
 		visibility: true,
+    leftMenuMode: 'targets'
 	},
 	mutations: {
 		changeUpperCase (state){
@@ -18,10 +19,9 @@ export default {
 		},
 		changeVisibility (state){
 			state.visibility =  !state.visibility
-		}
+		},
 	},
 	actions: {
-		
 	},
 	getters: {
 		computedUpperCase (state) {

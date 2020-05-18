@@ -7,25 +7,24 @@
           v-for="item in colorsArray"
           :key="item"
           :ripple="false"
-          @click="changeColor(item)"
+          @click="changeColorPicker(item)"
           :color="item"
           mandatory= true
           max="0"
           >
             <div class="img img-size">
             <img
-            v-if="params.colorPicker === item"
+            v-if="colorPicker === item"
             src="approval64.png"
             alt="approval"
             >
           </div>
           </v-btn>
-          
+
         </v-btn-toggle>
   </div>
 </template>
 <script>
-import {eventEmitter} from '@/main'
 import Account from '@/store/FinPlan/Account.js'
 
 export default{
@@ -43,20 +42,27 @@ export default{
   },
   computed:{
     colorsArray(){
-      let colorsArray = this.params.colorsArray.map(item => item.color).filter(x => !this.colorsIgnore.includes(x))
+      let colorsArray = this.$store.getters.colorsArray
+        .map(item => item.color)
+        .filter(x =>
+        !this.colorsIgnore.includes(x)
+        )
       if(this.editItem.color){
         colorsArray.unshift(this.editItem.color)
-        eventEmitter.$emit('changeColorPicker', this.editItem.color)
+        this.$store.dispatch('colorPicker', this.editItem.color)
       }else{
-        eventEmitter.$emit('changeColorPicker', colorsArray[0])
+        this.$store.dispatch('colorPicker', colorsArray[0])
       }
       return colorsArray.slice (0, 10)
     },
+    colorPicker(){
+      return this.$store.getters.colorPicker
+    }
   },
   methods:{
-    changeColor(color){
-      eventEmitter.$emit('changeColorPicker', color)
-    }
+    changeColorPicker(val){
+      this.$store.dispatch('colorPicker', val)
+    },
   },
 
 }

@@ -1,16 +1,16 @@
 <template>
-  
-<v-card 
+<v-card
         class="card RightButtons"
       >
-        <v-btn-toggle 
+        <v-btn-toggle
         v-model="toggle_exclusive"
         mandatory
         >
             <v-tooltip bottom>
       <template v-slot:activator="{ on }">
-          <v-btn  
-          @click="changeCalendar"
+          <v-btn
+            active-class="rightBarMode === calendar ? true : false"
+          @click="changeRMB('calendar')"
           v-on="on"
           >
             <div class="img img-size">
@@ -23,10 +23,8 @@
       </template>
       <span>Календарь</span>
     </v-tooltip>
-
-
-          <v-btn 
-          @click="changeCalculator"
+          <v-btn
+          @click="changeRMB('calc')"
           >
             <div class="img img-size">
             <img
@@ -35,8 +33,8 @@
             >
           </div>
           </v-btn>
-          <v-btn 
-          @click="changeCurrency"
+          <v-btn
+          @click="changeRMB('currancy')"
           >
             <div class="img img-size">
             <img
@@ -46,8 +44,8 @@
           </div>
           </v-btn>
           <v-btn
-          class = "button" 
-          @click="changeDayCalc"
+          class = "button"
+          @click="changeRMB('dayCalc')"
           >
           <div class="img img-size">
             <img
@@ -55,11 +53,11 @@
             alt="DayCalc"
             >
           </div>
-            
+
           </v-btn>
           <v-btn
-          class = "button" 
-          @click="changeCreditCalc"
+          class = "button"
+          @click="changeRMB('CreditCalc')"
           >
             <div class="img img-size">
             <img
@@ -68,9 +66,6 @@
             >
           </div>
           </v-btn>
-
-
-
         </v-btn-toggle>
     </v-card>
 </template>
@@ -80,47 +75,20 @@
     data() {
       return {
       toggle_exclusive: undefined
-      }        
-    },
-    components:{
+      }
     },
     computed:{
+      rightBarMode(){
+        return this.$store.getters.rightBarMode
+      },
       visibility(){
       return this.$store.getters.computedVisibility
-    }
-
+      }
     },
     methods:{
-      changeCalendar() {
-        if(!this.$store.getters.computedCalendar){
-        this.$store.commit('changeCalendar', {
-        })
-        }
+      changeRMB(val){
+        this.$store.dispatch('rightBarMode', val)
       },
-      changeCalculator() {
-        if(!this.$store.getters.computedCalculator){
-        this.$store.commit('changeCalculator', {
-        })
-        }
-      },
-      changeCurrency() {
-        if(!this.$store.getters.computedCurrency){
-        this.$store.commit('changeCurrency', {
-        })
-        }
-      },
-      changeDayCalc() {
-        if(!this.$store.getters.computedDayCalc){
-        this.$store.commit('changeDayCalc', {
-        })
-        }
-      },
-      changeCreditCalc() {
-        if(!this.$store.getters.computedCreditCalc){
-        this.$store.commit('changeCreditCalc', {
-        })
-        }
-      }
   }
 
   }
